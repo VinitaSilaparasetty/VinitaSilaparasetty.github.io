@@ -1,0 +1,33 @@
+# Vinita Silaparasetty
+
+> AI governance engineer, Apress author and educator. I design AI and data science courses, training programs and technical content for EdTech platforms, technical publishers and companies that train their own teams. Remote, across Europe. I am also the founder of Aevoxis Solutions (https://aevoxis.de), which builds tooling for EU AI Act Articles 12–14 (record-keeping, transparency, human oversight).
+
+Credentials: Google Developer Expert (Machine Learning); AWS Community Builder (Machine Learning); M.Sc. Data Science, Newcastle University; IEEE and Elsevier invited peer reviewer; Indian Design Patent IN 307907 (dual-purpose lightweight VR headset); Best Paper Award for a paper comparing Python and R for machine learning; 14 accredited courses on the Coursera Project Network; more than 100 professionals taught in the UK and India.
+
+Contact: info@aevoxis.de, +49 15679 836401. Projects are invoiced through SMartDe eG, a cooperative for self-employed professionals in Germany.
+
+## Pages
+
+- [Home](https://vinitasilaparasetty.github.io/): Who I am, credentials, book, services and selected testimonials
+- [Services](https://vinitasilaparasetty.github.io/services.html): Course and curriculum development, technical white papers, AI training programs for organizations, review and audit of technical content; how engagements work; FAQ
+- [Book](https://vinitasilaparasetty.github.io/book.html): Deep Learning Projects Using TensorFlow 2 (Apress, 2020), ISBNs, DOI and code
+- [Testimonials](https://vinitasilaparasetty.github.io/testimonials.html): Eight comments from training managers, course participants and learners
+- [Contact](https://vinitasilaparasetty.github.io/contact.html): Email and phone
+
+## Book
+
+- Deep Learning Projects Using TensorFlow 2: Neural Network Development with Python and Keras. Apress, 2020. ISBN 978-1-4842-5801-9 (print), 978-1-4842-5802-6 (eBook).
+- [DOI 10.1007/978-1-4842-5802-6](https://doi.org/10.1007/978-1-4842-5802-6)
+- [Book page on SpringerLink](https://link.springer.com/book/10.1007/978-1-4842-5802-6)
+- [Source code](https://github.com/Apress/Deep-Learning-Projects-Using-TensorFlow-2)
+
+## Profiles
+
+- [LinkedIn](https://www.linkedin.com/in/vinita-silaparasetty)
+- [GitHub](https://github.com/VinitaSilaparasetty)
+- [Aevoxis Solutions](https://aevoxis.de)
+
+## Optional
+
+- [Impressum](https://vinitasilaparasetty.github.io/impressum.html): German legal notice
+- [Datenschutzerklärung](https://vinitasilaparasetty.github.io/datenschutz.html): German privacy policy

@@ -1,80 +1,249 @@
 <!doctype html>
-<html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aevoxis Solutions – Architektin der Digitalen Souveränität</title>
-    <meta name="description" content="Aevoxis implementiert verifizierbare, rechtskonforme und industrielle KI-Intelligenz für den deutschen Mittelstand." />
-    <meta name="author" content="Aevoxis Solutions" />
-    <meta property="og:title" content="Aevoxis Solutions" />
-    <meta property="og:description" content="Spezialisierte KI-Beratung für den deutschen Mittelstand." />
-    <meta property="og:type" content="website" />
-    <link rel="stylesheet" id="silktide-consent-manager-css" href="/silktide-consent-manager.css">
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-    <script src="/silktide-consent-manager.js"></script>
-    <script>
-      silktideCookieBannerManager.updateCookieBannerConfig({
-        background: {
-          showBackground: true
-        },
-        cookieIcon: {
-          position: "bottomLeft"
-        },
-        cookieTypes: [
-          {
-            id: "essenziell_technisch_notwendig",
-            name: "Essenziell / Technisch Notwendig",
-            description: "<p><span style=\"font-size:13pt;font-family:Arial,sans-serif;color:#39434c;font-weight:700;\">Diese Cookies sind für den sicheren und funktionsfähigen Betrieb dieser Website technisch erforderlich (gemäß § 25 Abs. 2 TDDDG). Sie ermöglichen Basisfunktionen wie den sicheren Login, die Verwaltung Ihrer Privatsphäre-Einstellungen und die zuverlässige Übermittlung Ihrer Formularanfragen an unsere Server in der EU. Diese Technologien sind einwilligungsfrei und können nicht deaktiviert werden.</span></p>",
-            required: true,
-            onAccept: function() {
-              console.log('Essenziell / Technisch Notwendig accepted');
-            }
-          },
-          {
-            id: "analyse_performance",
-            name: "Analyse & Performance",
-            description: "<p><span style=\"font-size:13pt;font-family:Arial,sans-serif;font-weight:700;\">Diese Cookies ermöglichen es uns, Besuche und Verkehrsquellen zu zählen, damit wir die Leistung von Aevoxis messen und verbessern können (gemäß Art. 6 Abs. 1 lit. a DSGVO und § 25 TDDDG).</span></p>",
-            required: false,
-            onAccept: function() {
-              if (typeof gtag !== 'undefined') {
-                gtag('consent', 'update', { analytics_storage: 'granted' });
-              }
-              if (typeof dataLayer !== 'undefined') {
-                dataLayer.push({ 'event': 'consent_accepted_analyse_performance' });
-              }
-            },
-            onReject: function() {
-              if (typeof gtag !== 'undefined') {
-                gtag('consent', 'update', { analytics_storage: 'denied' });
-              }
-            }
-          }
-        ],
-        text: {
-          banner: {
-            description: "<p><span style=\"font-size:13pt;font-family:Arial,sans-serif;font-weight:700;\">Datenschutz & KI-Transparenz — Wir verwenden technisch notwendige Cookies sowie — mit Ihrer Einwilligung — Analysetools, um Ihr Nutzererlebnis zu verbessern. Als KI-natives Projekt der Smart eG verarbeiten wir Interaktionsdaten auch zur Optimierung unserer spezialisierten KI-Modelle. Gemäß dem EU AI Act 2026 weisen wir darauf hin, dass diese Seite KI-generierte Inhalte und automatisierte Logik nutzt.</span></p>",
-            acceptAllButtonText: "Akzeptiere alles",
-            acceptAllButtonAccessibleLabel: "Akzeptieren Sie alle Cookies",
-            rejectNonEssentialButtonText: "Nicht essentiell ablehnen",
-            rejectNonEssentialButtonAccessibleLabel: "Nicht essentiell ablehnen",
-            preferencesButtonText: "Präferenzen",
-            preferencesButtonAccessibleLabel: "Einstellungen umschalten"
-          },
-          preferences: {
-            title: "Privatsphäre- & KI-Einstellungen",
-            description: "<p><span style=\"font-size:13pt;font-family:Arial,sans-serif;font-weight:700;\">Bei Aevoxis legen wir Wert auf technische Transparenz. Sie haben das Recht zu kontrollieren, wie Ihre Daten verwendet werden. Unten können Sie spezifische Kategorien von Cookies und der Datenverarbeitung aktivieren oder deaktivieren.</span></p>",
-            creditLinkText: "Mit Integrität gebaut",
-            creditLinkAccessibleLabel: "Mit Integrität gebaut"
-          }
-        },
-        position: {
-          banner: "center"
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vinita Silaparasetty: AI Courses, Training and Writing</title>
+<meta name="description" content="I design AI and data science courses, training and technical content. Apress author, Google Developer Expert in ML, AWS Community Builder.">
+<meta name="author" content="Vinita Silaparasetty">
+<link rel="canonical" href="https://vinitasilaparasetty.github.io/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#14304f">
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="Vinita Silaparasetty">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Vinita Silaparasetty: AI Courses, Training and Writing">
+<meta property="og:description" content="I design AI and data science courses, training and technical content. Apress author, Google Developer Expert in ML, AWS Community Builder.">
+<meta property="og:url" content="https://vinitasilaparasetty.github.io/">
+<meta property="profile:first_name" content="Vinita">
+<meta property="profile:last_name" content="Silaparasetty">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vinita Silaparasetty: AI Courses, Training and Writing">
+<meta name="twitter:description" content="I design AI and data science courses, training and technical content. Apress author, Google Developer Expert in ML, AWS Community Builder.">
+<link rel="stylesheet" href="/styles.css">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<link rel="alternate" type="text/markdown" title="llms.txt" href="/llms.txt">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://vinitasilaparasetty.github.io/#person",
+      "name": "Vinita Silaparasetty",
+      "jobTitle": "AI Governance Engineer",
+      "description": "AI governance engineer, Apress author and educator. Designs AI and data science courses, training programs and technical content for EdTech platforms, technical publishers and companies.",
+      "url": "https://vinitasilaparasetty.github.io/",
+      "email": "mailto:info@aevoxis.de",
+      "sameAs": [
+        "https://www.linkedin.com/in/vinita-silaparasetty",
+        "https://github.com/VinitaSilaparasetty",
+        "https://aevoxis.de"
+      ],
+      "alumniOf": {
+        "@type": "CollegeOrUniversity",
+        "name": "Newcastle University"
+      },
+      "hasCredential": {
+        "@type": "EducationalOccupationalCredential",
+        "credentialCategory": "degree",
+        "name": "M.Sc. Data Science, Newcastle University"
+      },
+      "award": [
+        "Google Developer Expert (Machine Learning)",
+        "AWS Community Builder (Machine Learning)",
+        "Best Paper Award for a paper comparing Python and R for machine learning",
+        "Indian Design Patent IN 307907 (dual-purpose lightweight VR headset)"
+      ],
+      "knowsAbout": [
+        "Machine learning",
+        "Deep learning",
+        "Data science",
+        "TensorFlow",
+        "Keras",
+        "Python",
+        "R",
+        "Generative AI",
+        "EU AI Act",
+        "AI governance",
+        "Curriculum design",
+        "Technical writing"
+      ],
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Aevoxis Solutions",
+        "url": "https://aevoxis.de",
+        "founder": {
+          "@id": "https://vinitasilaparasetty.github.io/#person"
         }
-      });
-    </script>
-    <script>var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}</script>
-  </body>
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://vinitasilaparasetty.github.io/#website",
+      "name": "Vinita Silaparasetty",
+      "url": "https://vinitasilaparasetty.github.io/",
+      "inLanguage": "en",
+      "author": {
+        "@id": "https://vinitasilaparasetty.github.io/#person"
+      },
+      "publisher": {
+        "@id": "https://vinitasilaparasetty.github.io/#person"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/">Vinita Silaparasetty</a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="/" aria-current="page">Home</a></li>
+        <li><a href="/services.html">Services</a></li>
+        <li><a href="/book.html">Book</a></li>
+        <li><a href="/testimonials.html">Testimonials</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<section class="hero">
+  <div class="wrap">
+    <!-- PHOTO: when a photo exists, save it as /assets/vinita.jpg and replace the div below with:
+         <img class="portrait" src="/assets/vinita.jpg" width="288" height="288" alt="Portrait of Vinita Silaparasetty">
+         Then add "image": "https://vinitasilaparasetty.github.io/assets/vinita.jpg" to the Person JSON-LD. -->
+    <div class="monogram" aria-hidden="true">VS</div>
+    <div>
+      <p class="eyebrow">AI governance engineer &middot; Author &middot; Educator</p>
+      <h1>Vinita Silaparasetty</h1>
+      <p class="lead">I design AI and data science courses, training programs and technical content for EdTech platforms, technical publishers and companies that train their own teams.</p>
+      <p>I wrote <cite>Deep Learning Projects Using TensorFlow 2</cite> for Apress. I am a Google Developer Expert in Machine Learning and an AWS Community Builder (Machine Learning).</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="/contact.html">Work with me</a>
+        <a class="btn btn-ghost" href="/services.html">See my services</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="proof">
+  <div class="wrap">
+    <h2 id="proof">Credentials</h2>
+    <p>These are the facts behind my teaching and writing.</p>
+    <ul class="proof">
+        <li><strong>Google Developer Expert</strong> <span>Machine Learning</span></li>
+        <li><strong>AWS Community Builder</strong> <span>Machine Learning</span></li>
+        <li><strong>Apress author</strong> <span><a href="/book.html">Deep Learning Projects Using TensorFlow 2</a>, 2020</span></li>
+        <li><strong>M.Sc. Data Science</strong> <span>Newcastle University (Russell Group)</span></li>
+        <li><strong>14 accredited courses</strong> <span>Coursera Project Network</span></li>
+        <li><strong>100+ professionals taught</strong> <span>In the UK and India</span></li>
+        <li><strong>Invited peer reviewer</strong> <span>IEEE and Elsevier</span></li>
+        <li><strong>Indian Design Patent IN 307907</strong> <span>A dual-purpose lightweight VR headset</span></li>
+        <li><strong>Best Paper Award</strong> <span><a href="https://github.com/VinitaSilaparasetty/Python-vs-R-for-Machine-Learning">Python vs R for machine learning</a></span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="book">
+  <div class="wrap book">
+    <a href="/book.html"><img src="https://media.springernature.com/w300/springer-static/cover/book/978-1-4842-5802-6.jpg?as=webp" width="300" height="427" loading="lazy" decoding="async" alt="Cover of the book Deep Learning Projects Using TensorFlow 2 by Vinita Silaparasetty, published by Apress"></a>
+    <div>
+      <p class="eyebrow">Book</p>
+      <h2 id="book">Deep Learning Projects Using TensorFlow 2</h2>
+      <p>My book is a project-based guide to building neural networks with Python and Keras. Apress published it in 2020.</p>
+      <p>Each project chapter explains one type of network, then builds it step by step: sentiment analysis, music generation, image colorization, image deblurring etc.</p>
+      <p><a href="/book.html">About the book</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="services">
+  <div class="wrap">
+    <h2 id="services">What I do for clients</h2>
+    <p>I build and review AI and data science learning material for teams that teach. All work is remote, across Europe.</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Course and curriculum development</h3>
+        <p>I build complete AI and data science curricula for professional audiences.</p>
+      </div>
+      <div class="card">
+        <h3>Technical white papers</h3>
+        <p>I write researched, technically precise white papers for platforms and organizations.</p>
+      </div>
+      <div class="card">
+        <h3>AI training programs for organizations</h3>
+        <p>I design training on generative AI, machine learning and EU AI Act awareness.</p>
+      </div>
+      <div class="card">
+        <h3>Review and audit of technical content</h3>
+        <p>I check existing AI and data science curricula and documentation for accuracy, clarity and practical relevance.</p>
+      </div>
+    </div>
+    <p style="margin-top:1.5rem"><a href="/services.html">Services, deliverables and FAQ</a></p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="quotes">
+  <div class="wrap">
+    <h2 id="quotes">What people say</h2>
+    <p>Three comments from a curriculum manager, a course participant and a Coursera learner.</p>
+    <div class="quotes">
+      <figure class="quote">
+        <blockquote><p>&ldquo;Vinita is constantly achieving NPS scores between 8 and 10 with an overall average of 8.71, which puts her in the world-class category.&rdquo;</p></blockquote>
+        <figcaption><b>Jeanette Wood</b>Quality and Curriculum Manager, JustIT</figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote><p>&ldquo;Thank you Vinita for putting together an excellent course with challenging exercises.&rdquo;</p></blockquote>
+        <figcaption><b>Dr. Ravi Tahilramani</b>VP Vertical Management Energy Middle East, Siemens</figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote><p>&ldquo;I was able to build a Covid-19 Dashboard and deploy it on an AWS EC2 instance as well as Heroku, thanks to Vinita&#x27;s course on Coursera.&rdquo;</p></blockquote>
+        <figcaption><b>Ashaab Rizvi</b>Data Engineering Analyst, Accenture</figcaption>
+      </figure>
+    </div>
+    <p style="margin-top:1.5rem"><a href="/testimonials.html">Read all eight testimonials</a></p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="aevoxis">
+  <div class="wrap">
+    <div class="callout">
+      <h2 id="aevoxis">My company: Aevoxis Solutions</h2>
+      <p>I am the founder of Aevoxis Solutions. It builds tooling for EU AI Act Articles 12&ndash;14: record-keeping, transparency and human oversight.</p>
+      <p>Its Spec-Drift Chronometer was a Top 300 finalist out of 10,000+ submissions in the AWS 10,000 AIdeas Competition 2025.</p>
+      <p>My education work is separate. I offer it personally, through this site.</p>
+      <p><a href="https://aevoxis.de">Visit aevoxis.de</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="cta">
+  <div class="wrap">
+    <h2 id="cta">Planning a course or a training program?</h2>
+    <p>Email me the topic, the audience and your timeline. I will reply with questions or a first outline.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:info@aevoxis.de">info@aevoxis.de</a>
+      <a class="btn btn-ghost" href="/contact.html">Other ways to reach me</a>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <ul>
+      <li><a href="/impressum.html" lang="de">Impressum</a></li>
+      <li><a href="/datenschutz.html" lang="de">Datenschutz</a></li>
+      <li><a href="https://www.linkedin.com/in/vinita-silaparasetty" rel="me">LinkedIn</a></li>
+      <li><a href="https://github.com/VinitaSilaparasetty" rel="me">GitHub</a></li>
+      <li><a href="https://aevoxis.de">Aevoxis Solutions</a></li>
+    </ul>
+    <p>&copy; 2026 Vinita Silaparasetty</p>
+  </div>
+</footer>
+</body>
 </html>
