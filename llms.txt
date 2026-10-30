@@ -1,6 +1,6 @@
 # Vinita Silaparasetty
 
-> AI governance engineer, Apress author and educator. I design AI and data science courses, training programs and technical content for EdTech platforms, technical publishers and companies that train their own teams. Remote, across Europe. I am also the founder of Aevoxis Solutions (https://aevoxis.de), which builds tooling for EU AI Act Articles 12–14 (record-keeping, transparency, human oversight).
+> AI governance engineer, Apress author and educator. I design AI and data science courses, training programs and technical content for EdTech platforms, technical publishers and companies that train their own teams. Remote, across Europe. Aevoxis (https://aevoxis.de) is the name I use for my EU AI Act engineering work (Article 50 transparency; Articles 12–14 record-keeping, transparency and human oversight). It is a brand, not a registered company; I work as a member of SMartDE eG.
 
 Credentials: Google Developer Expert (Machine Learning); AWS Community Builder (Machine Learning); M.Sc. Data Science, Newcastle University; IEEE and Elsevier invited peer reviewer; Indian Design Patent IN 307907 (dual-purpose lightweight VR headset); Best Paper Award for a paper comparing Python and R for machine learning; 14 accredited courses on the Coursera Project Network; more than 100 professionals taught in the UK and India.
 
@@ -10,6 +10,7 @@ Contact: info@aevoxis.de, +49 15679 836401. Projects are invoiced through SMartD
 
 - [Home](https://vinitasilaparasetty.github.io/): Who I am, credentials, book, services and selected testimonials
 - [Services](https://vinitasilaparasetty.github.io/services.html): Course and curriculum development, technical white papers, AI training programs for organizations, review and audit of technical content; how engagements work; FAQ
+- [Case study](https://vinitasilaparasetty.github.io/case-study-cpd-course.html): From participant manual to accreditation-ready course in five weeks; two assessed modules for FormativeLabz, CPD-accredited for 23 hours (The CPD Group, activity #1017517)
 - [Book](https://vinitasilaparasetty.github.io/book.html): Deep Learning Projects Using TensorFlow 2 (Apress, 2020), ISBNs, DOI and code
 - [Testimonials](https://vinitasilaparasetty.github.io/testimonials.html): Eight comments from training managers, course participants and learners
 - [Contact](https://vinitasilaparasetty.github.io/contact.html): Email and phone

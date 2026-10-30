@@ -325,3 +325,12 @@ main { display: block; }
 @media (prefers-reduced-motion: no-preference) {
   .btn, .site-nav a { transition: background-color 0.15s, color 0.15s, border-color 0.15s; }
 }
+
+/* Case study tables */
+.table-scroll { overflow-x: auto; margin: 1rem 0 1.5rem; }
+.data { border-collapse: collapse; width: 100%; min-width: 32rem; font-size: 0.97rem; }
+.data th, .data td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.data thead th { color: var(--navy); font-weight: 600; border-bottom: 2px solid var(--line); }
+.data tbody th { font-weight: 600; color: var(--text); }
+.pull { margin: 1.5rem 0; padding: 1.25rem 1.5rem; border-left: 3px solid var(--teal); background: var(--surface); font-family: var(--serif); font-size: 1.12rem; max-width: var(--measure); }
+.pull p { margin: 0; }
