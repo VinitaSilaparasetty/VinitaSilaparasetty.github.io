@@ -12,6 +12,7 @@ Contact: info@aevoxis.de, +49 15679 836401. Projects are invoiced through SMartD
 - [Services](https://vinitasilaparasetty.github.io/services.html): Course and curriculum development, technical white papers, AI training programs for organizations, review and audit of technical content; how engagements work; FAQ
 - [Case study](https://vinitasilaparasetty.github.io/case-study-cpd-course.html): From participant manual to accreditation-ready course in five weeks; two assessed modules for FormativeLabz, CPD-accredited for 23 hours (The CPD Group, activity #1017517)
 - [Book](https://vinitasilaparasetty.github.io/book.html): Deep Learning Projects Using TensorFlow 2 (Apress, 2020), ISBNs, DOI and code
+- [Talks](https://vinitasilaparasetty.github.io/talks.html): Past talks and workshops, including two 2018 best-paper presentations, and speaking topics
 - [Testimonials](https://vinitasilaparasetty.github.io/testimonials.html): Eight comments from training managers, course participants and learners
 - [Contact](https://vinitasilaparasetty.github.io/contact.html): Email and phone
 
