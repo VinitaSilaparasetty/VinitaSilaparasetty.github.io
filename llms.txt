@@ -2,7 +2,7 @@
 
 > AI governance engineer, Apress author and educator. I design AI and data science courses, training programs and technical content for EdTech platforms, technical publishers and companies that train their own teams. Remote, across Europe. Aevoxis (https://aevoxis.de) is the name I use for my EU AI Act engineering work (Article 50 transparency; Articles 12–14 record-keeping, transparency and human oversight). It is a brand, not a registered company; I work as a member of SMartDE eG.
 
-Credentials: Google Developer Expert (Machine Learning); AWS Community Builder (Machine Learning); M.Sc. Data Science, Newcastle University; IEEE and Elsevier invited peer reviewer; Indian Design Patent IN 307907 (dual-purpose lightweight VR headset); Best Paper Award for a paper comparing Python and R for machine learning; 14 accredited courses on the Coursera Project Network; more than 100 professionals taught in the UK and India.
+Credentials: Google Developer Expert (Machine Learning); AWS Community Builder (Machine Learning); M.Sc. Data Science, Newcastle University; IEEE and Elsevier invited peer reviewer; Indian Design Patent IN 307907 (dual-purpose lightweight VR headset); two Best Paper Awards (2018): Python vs. R for Secure Machine Learning (International Conference on Security) and Combining Blockchain and Machine Learning for Fraud Detection (International Knowledge Transfer Conclave); 14 accredited courses on the Coursera Project Network; more than 100 professionals taught in the UK and India.
 
 Contact: info@aevoxis.de, +49 15679 836401. Projects are invoiced through SMartDe eG, a cooperative for self-employed professionals in Germany.
 
