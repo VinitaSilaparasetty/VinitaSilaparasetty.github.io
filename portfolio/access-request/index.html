@@ -1,0 +1,1205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Access Request</title>
+<meta name="description" content="Branching e-learning scenario: handling a GDPR data subject access request at a fictional company.">
+<!--
+  THE ACCESS REQUEST - a branching GDPR scenario
+  ------------------------------------------------
+  Single self-contained file: no external images, fonts, libraries or network calls.
+  All characters and scenes are inline SVG drawn in code (see CHARACTERS / SCENES below).
+
+  HOW TO EDIT TEXT: scroll to the "SCENARIO CONTENT" section of the <script>.
+  Every screen is an entry in NODES. Options carry their text, feedback, legal citation,
+  effects on the meters and the id of the next node. Endings are in ENDINGS.
+  Lumaro Home Services and every person named here are fictional.
+-->
+<style>
+  /* ---------- Design tokens ---------- */
+  :root{
+    --ink:#1b2433; --muted:#4a5568; --line:#d5dde6; --bg:#eef2f6; --card:#ffffff; --soft:#f6f8fb;
+    --brand:#0b6b6b; --brand-dark:#084f4f; --brand-tint:#e3f2f1;
+    --good:#1d7a3e; --good-tint:#e5f4ea; --warn:#8f5200; --warn-tint:#fdf1df; --bad:#b42318; --bad-tint:#fdeceb;
+    --focus:#1a56db; --radius:14px; --shadow:0 1px 2px rgba(16,24,40,.06),0 6px 20px rgba(16,24,40,.07);
+    --font:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.5}
+  .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  :focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+  .app{max-width:1000px;margin:0 auto;padding:12px 16px 28px}
+  button{font:inherit;color:inherit;cursor:pointer}
+  a{color:var(--brand-dark)}
+
+  /* ---------- HUD (deadline + meters) ---------- */
+  .hud{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;box-shadow:var(--shadow);margin-bottom:12px}
+  .hud[hidden]{display:none}
+  .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.95rem;margin-right:auto}
+  .brand svg{flex:none}
+  .stat{display:flex;align-items:center;gap:8px;min-width:0}
+  .stat-label{font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+  .days{background:var(--brand-tint);border-radius:999px;padding:4px 12px 4px 8px;transition:background .4s}
+  .days b{font-size:1.15rem}
+  .days.warn{background:var(--warn-tint)} .days.warn b{color:var(--warn)}
+  .days.bad{background:var(--bad-tint)} .days.bad b{color:var(--bad)}
+  .days-unit{font-size:.85rem;color:var(--muted)}
+  .meter{position:relative;flex-direction:column;align-items:flex-start;gap:2px}
+  .mrow{display:flex;align-items:center;gap:8px}
+  .bar{width:110px;height:10px;border-radius:99px;background:#e2e8f0;overflow:hidden;border:1px solid #cfd8e3}
+  .fill{display:block;height:100%;width:50%;border-radius:99px;transition:width .7s cubic-bezier(.3,.9,.3,1),background-color .7s}
+  #trustFill{background:var(--brand)}
+  .meter-val{font-size:.85rem;font-weight:700;min-width:2ch;text-align:right}
+  .delta{position:absolute;right:-6px;top:-14px;font-size:.75rem;font-weight:700;padding:0 6px;border-radius:99px;opacity:0;transform:translateY(4px);transition:opacity .3s,transform .3s;pointer-events:none}
+  .delta.show{opacity:1;transform:none}
+  .delta.up-good,.delta.down-good{background:var(--good-tint);color:var(--good)}
+  .delta.up-bad,.delta.down-bad{background:var(--bad-tint);color:var(--bad)}
+  .pulse{animation:pulse .7s ease}
+  @keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+  .linkbtn{background:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:.82rem;color:var(--muted)}
+  .linkbtn:hover{background:var(--soft)}
+
+  /* ---------- Main card ---------- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .scene{display:block;width:100%;height:auto;background:#e4ecf2;border-bottom:1px solid var(--line)}
+  .body{padding:18px 22px 22px}
+  .eyebrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+  .dots{display:flex;gap:4px}
+  .dots i{width:18px;height:5px;border-radius:3px;background:#d7dee7}
+  .dots i.done{background:var(--brand)} .dots i.now{background:var(--warn)}
+  h1,h2,h3{line-height:1.25;margin:.2em 0 .5em}
+  h2{font-size:1.4rem}
+  /* Headings receive focus programmatically (tabindex=-1) so screen readers start reading there; they are not interactive, so no ring. */
+  [tabindex="-1"]:focus,[tabindex="-1"]:focus-visible{outline:none}
+  .narr{margin:0 0 12px}
+  .narr p{margin:.4em 0}
+  .bubble{position:relative;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:10px 0 12px}
+  .bubble .who{display:block;font-size:.8rem;font-weight:700;color:var(--brand-dark);margin-bottom:2px}
+  .prompt{font-weight:700;margin:14px 0 8px}
+
+  /* choices */
+  .choices{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+  .choice{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 14px;transition:border-color .2s,background .2s,transform .15s}
+  .choice:hover:not([disabled]){border-color:var(--brand);background:var(--brand-tint)}
+  .choice:active:not([disabled]){transform:scale(.995)}
+  .choice .key{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--brand-tint);color:var(--brand-dark);font-weight:700;font-size:.9rem}
+  .choice[disabled]{cursor:default;opacity:.6}
+  .choice[aria-pressed="true"]{opacity:1;border-color:var(--brand);background:var(--brand-tint)}
+  .choice[aria-pressed="true"] .key{background:var(--brand);color:#fff}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:10px;padding:11px 20px;font-weight:700;background:var(--brand);color:#fff;transition:background .2s}
+  .btn:hover{background:var(--brand-dark)}
+  .btn.secondary{background:#fff;color:var(--brand-dark);border:2px solid var(--brand)}
+  .btn.secondary:hover{background:var(--brand-tint)}
+  .btn[disabled]{opacity:.5;cursor:default}
+  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+
+  /* feedback */
+  .feedback{margin-top:16px;border-radius:12px;border:1px solid var(--line);border-left:6px solid var(--brand);background:var(--soft);padding:14px 16px;animation:rise .35s ease}
+  .feedback.best{border-left-color:var(--good)} .feedback.ok{border-left-color:var(--warn)} .feedback.poor{border-left-color:var(--bad)}
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .badge{display:inline-block;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:99px;margin-right:6px;vertical-align:middle}
+  .badge.best{background:var(--good-tint);color:var(--good)} .badge.ok{background:var(--warn-tint);color:var(--warn)} .badge.poor{background:var(--bad-tint);color:var(--bad)}
+  .feedback h3{font-size:1.05rem;margin:.1em 0 .4em;display:inline}
+  .feedback p{margin:.45em 0}
+  .cite{display:inline-block;margin-top:4px;font-size:.85rem;font-weight:700;color:var(--brand-dark);background:var(--brand-tint);border-radius:6px;padding:2px 8px}
+  .fb-list{margin:.4em 0;padding-left:1.2em}
+  .fb-list li{margin:.2em 0}
+
+  /* inbox */
+  .inbox{display:grid;grid-template-columns:minmax(200px,38%) 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden;min-height:300px}
+  .mail-list{list-style:none;margin:0;padding:0;border-right:1px solid var(--line);background:var(--soft)}
+  .mail-item{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:transparent;padding:10px 12px;position:relative}
+  .mail-item:hover{background:#eaf0f5}
+  .mail-item[aria-current="true"]{background:#fff;box-shadow:inset 4px 0 0 var(--brand)}
+  .mail-item .from{display:flex;justify-content:space-between;gap:6px;font-weight:700;font-size:.9rem}
+  .mail-item .from time{font-weight:400;color:var(--muted);font-size:.78rem}
+  .mail-item .subj{display:block;font-size:.85rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mail-item.unread .subj{color:var(--ink)}
+  .flagmark[hidden]{display:none}
+  .flagmark{display:inline-flex;align-items:center;gap:3px;font-size:.72rem;font-weight:700;color:var(--bad);margin-top:3px}
+  .reader{padding:14px 16px;background:#fff}
+  .reader .meta{font-size:.85rem;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:10px}
+  .reader h3{font-size:1.05rem;margin:0 0 4px}
+  .reader .mailbody p{margin:.5em 0}
+  .flagbtn{margin-top:10px;border:2px solid var(--bad);color:var(--bad);background:#fff;border-radius:10px;padding:8px 14px;font-weight:700}
+  .flagbtn[aria-pressed="true"]{background:var(--bad);color:#fff}
+
+  /* checklist */
+  fieldset.check{border:1px solid var(--line);border-radius:12px;padding:6px 12px 10px;margin:0}
+  fieldset.check legend{font-weight:700;padding:0 6px}
+  .opt{display:flex;gap:10px;align-items:flex-start;padding:9px 6px;border-bottom:1px dashed var(--line)}
+  .opt:last-of-type{border-bottom:0}
+  .opt input{width:20px;height:20px;margin-top:2px;flex:none;accent-color:var(--brand)}
+  .opt label{flex:1;cursor:pointer}
+  .opt .res{display:block;font-size:.85rem;margin-top:3px}
+  .res.good{color:var(--good)} .res.bad{color:var(--bad)} .res.warn{color:var(--warn)}
+
+  /* redaction document */
+  .doc{border:1px solid var(--line);border-radius:6px;background:#fffdf8;padding:18px 20px;box-shadow:0 2px 0 #ece6d8;font-family:Consolas,"Courier New",monospace;font-size:.9rem;line-height:1.9}
+  .doc h3{font-family:var(--font);font-size:1rem;margin:0 0 6px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .doc .stamp{font-size:.72rem;color:var(--bad);border:2px solid var(--bad);border-radius:4px;padding:0 6px;transform:rotate(-3deg)}
+  .tok{font:inherit;border:0;border-bottom:2px dotted #8a94a6;background:#fff3c4;padding:0 3px;border-radius:3px;color:var(--ink);transition:background .2s,color .2s}
+  .tok:hover{background:#ffe58a}
+  .tok[aria-pressed="true"]{background:#111;color:#111;border-bottom-color:#111;text-shadow:none}
+  .tok[aria-pressed="true"] .tt{visibility:hidden}
+  .tok[aria-pressed="true"]:hover{background:#333}
+  .tok.miss{outline:3px solid var(--bad);outline-offset:1px}
+  .tok.over{outline:3px solid var(--warn);outline-offset:1px}
+  .counter{font-size:.85rem;color:var(--muted);margin-top:6px}
+
+  /* call */
+  .callbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;background:#0f2a3a;color:#fff;border-radius:12px;padding:10px 14px;margin-bottom:10px}
+  .callbar .dot{width:10px;height:10px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 rgba(74,222,128,.6);animation:ring 1.6s infinite}
+  @keyframes ring{0%{box-shadow:0 0 0 0 rgba(74,222,128,.6)}70%{box-shadow:0 0 0 10px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+  .patience{flex:1;min-width:140px}
+  .patience .lbl{font-size:.78rem;opacity:.9}
+  .ptrack{height:8px;background:rgba(255,255,255,.2);border-radius:99px;overflow:hidden}
+  .pfill{height:100%;width:100%;background:#fbbf24;transition:width 1s linear}
+  .callbar button{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);border-radius:8px;padding:4px 10px;font-size:.82rem}
+  .callbar button:hover{background:rgba(255,255,255,.12)}
+
+  /* start + end */
+  .hero{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;align-items:center}
+  .hero h1{font-size:2.1rem;margin:.1em 0 .25em;letter-spacing:-.01em}
+  .kicker{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--brand-dark)}
+  .goal{font-size:1.08rem;color:var(--muted);margin:0 0 12px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:99px;padding:4px 12px;font-size:.85rem}
+  .panel{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-top:14px}
+  .panel h3{font-size:1rem;margin:0 0 6px}
+  .panel ol,.panel ul{margin:0;padding-left:1.3em}
+  .panel li{margin:.25em 0}
+  .cast{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+  .cast figure{margin:0;text-align:center;font-size:.8rem;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:6px 4px}
+  .cast figcaption b{display:block;font-size:.85rem}
+  .cast svg{width:100%;max-width:110px;height:auto}
+  .stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+  .stats3 div{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+  .stats3 b{display:block;font-size:1.5rem}
+  .stats3 span{font-size:.8rem;color:var(--muted)}
+  .endbadge{display:inline-block;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;padding:4px 12px;border-radius:99px}
+  .endbadge.exemplary{background:var(--good-tint);color:var(--good)}
+  .endbadge.clumsy{background:var(--warn-tint);color:var(--warn)}
+  .endbadge.leak,.endbadge.complaint{background:var(--bad-tint);color:var(--bad)}
+  .legal{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);margin-top:18px;padding-top:10px}
+  .review{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+  .review li{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:#fff}
+  .review .rh{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-weight:700}
+  .review .rc{margin:.3em 0;font-size:.93rem}
+  .review .rc span{color:var(--muted)}
+
+  .rule{background:var(--brand-tint);border-radius:10px;padding:10px 14px;margin:12px 0}
+  textarea{width:100%;font:inherit;border:2px solid var(--line);border-radius:10px;padding:8px 10px;resize:vertical}
+  .aid{margin:0;padding-left:1.4em;display:grid;gap:8px}
+  .aid li{padding-left:4px}
+  .aid .cite{margin:0 0 0 4px;font-size:.78rem}
+  @media print{ .hud,.row,.scene{display:none!important} body,html{background:#fff} .card{box-shadow:none;border:0} }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:720px){
+    .hero{grid-template-columns:1fr}
+    .bar{width:80px}
+  }
+  @media (max-width:560px){
+    .app{padding:8px 10px 20px}
+    .body{padding:14px 14px 18px}
+    h2{font-size:1.2rem}
+    .hero h1{font-size:1.6rem}
+    .inbox{grid-template-columns:1fr}
+    .mail-list{border-right:0;border-bottom:1px solid var(--line)}
+    .cast{grid-template-columns:repeat(2,1fr)}
+    .brand span{display:none}
+    .hud{gap:8px 12px;padding:8px 10px}
+    .bar{width:64px}
+    .stat-label{font-size:.7rem}
+    .doc{padding:12px;font-size:.84rem}
+  }
+
+  /* ---------- Reduced motion ---------- */
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hud" id="hud" hidden>
+    <div class="brand">
+      <svg width="28" height="28" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0b6b6b"/><path d="M10 21 L20 12 L30 21 V30 H10Z" fill="#fff"/><path d="M20 19 C23 23 24 25 24 26.5 A4 4 0 0 1 16 26.5 C16 25 17 23 20 19Z" fill="#0b6b6b"/></svg>
+      <span>The Access Request</span>
+    </div>
+    <div class="stat days" id="daysBox" aria-live="off">
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="stat-label">Deadline</span>
+      <span><b id="daysVal">30</b> <span class="days-unit" id="daysUnit">days left</span></span>
+    </div>
+    <div class="stat meter">
+      <span class="stat-label" id="trustLbl">Customer trust</span>
+      <div class="mrow"><div class="bar" id="trustBar" role="meter" aria-labelledby="trustLbl" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><span class="fill" id="trustFill"></span></div>
+      <span class="meter-val" id="trustVal" aria-hidden="true">50</span></div>
+      <span class="delta" id="trustDelta" aria-hidden="true"></span>
+    </div>
+    <div class="stat meter">
+      <span class="stat-label" id="riskLbl">Compliance risk</span>
+      <div class="mrow"><div class="bar" id="riskBar" role="meter" aria-labelledby="riskLbl" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><span class="fill" id="riskFill"></span></div>
+      <span class="meter-val" id="riskVal" aria-hidden="true">20</span></div>
+      <span class="delta" id="riskDelta" aria-hidden="true"></span>
+    </div>
+    <button class="linkbtn" id="restartBtn" type="button">Restart</button>
+  </header>
+
+  <main id="main" class="card" tabindex="-1"></main>
+  <div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+</div>
+
+<script>
+'use strict';
+/* =====================================================================
+   1. CHARACTERS (inline SVG, drawn in code)
+   Each character is a head-and-shoulders bust in a 160 x 192 box.
+   Expressions are swapped by changing brows + mouth (see FACES).
+   ===================================================================== */
+const CHARACTERS = {
+  agent:  { name:'You', role:'Customer service agent', skin:'#e7b38c', shade:'#cf9a72', hair:'#3a2a20', style:'crop', top:'#0b6b6b', headset:true },
+  marta:  { name:'Marta Feldkamp', role:'Customer', skin:'#f2c9a8', shade:'#dfad89', hair:'#9c4128', style:'bob', top:'#4c8a5a' },
+  tobias: { name:'Tobias Rehnert', role:'Team lead', skin:'#d29a70', shade:'#b98058', hair:'#2b2724', style:'short', beard:true, glasses:true, top:'#2d4c7c' },
+  dana:   { name:'Dana Weisskopf', role:'Data protection officer', skin:'#8a5a3c', shade:'#734a2f', hair:'#1d1715', style:'bun', top:'#6a4f9e', glasses:false }
+};
+const FACES = {
+  neutral:   { brows:'M61 69 L74 68 M86 68 L99 69', mouth:'M72 100 Q80 103 88 100' },
+  happy:     { brows:'M61 68 Q67 63 74 66 M86 66 Q93 63 99 68', mouth:'M69 97 Q80 110 91 97', blush:true },
+  concerned: { brows:'M61 70 L74 65 M86 65 L99 70', mouth:'M72 104 Q80 98 88 104' },
+  angry:     { brows:'M61 64 L75 70 M85 70 L99 64', mouth:'M70 105 Q80 95 90 105' }
+};
+const MOOD_WORDS = { neutral:'calm', happy:'pleased', concerned:'worried', angry:'annoyed' };
+const HAIR_FRONT = {
+  crop:  'M46 72 C42 40 62 30 82 30 C104 30 120 44 114 74 C110 58 98 50 84 50 C70 50 56 56 46 72 Z',
+  bob:   'M46 70 C46 42 66 32 84 34 C104 34 118 48 114 70 C102 56 84 50 70 54 C60 57 52 62 46 70 Z',
+  short: 'M47 66 C46 42 64 34 82 34 C102 34 116 46 113 66 C108 54 94 48 80 49 C66 49 54 55 47 66 Z',
+  bun:   'M46 74 C44 44 62 34 80 34 C100 34 118 44 114 74 C108 56 96 48 80 48 C64 48 52 56 46 74 Z'
+};
+
+/** Returns SVG markup (a <g>) for one character with the given mood. */
+function person(id, mood){
+  const c = CHARACTERS[id], f = FACES[mood] || FACES.neutral, ink = '#2a1d17';
+  let s = '';
+  if (c.style === 'bob') s += `<path d="M40 84 C34 40 58 26 82 26 C108 26 128 42 120 86 L122 120 C112 126 102 118 104 106 L104 66 L56 66 L56 106 C58 118 48 126 38 120 Z" fill="${c.hair}"/>`;
+  if (c.style === 'bun') s += `<circle cx="80" cy="30" r="15" fill="${c.hair}"/>`;
+  s += `<path d="M12 192 C12 146 40 130 80 130 C120 130 148 146 148 192 Z" fill="${c.top}"/>`;
+  s += `<path d="M64 131 L80 152 L96 131" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="3" stroke-linejoin="round"/>`;
+  s += `<rect x="68" y="104" width="24" height="32" rx="10" fill="${c.shade}"/>`;
+  s += `<circle cx="47" cy="80" r="7" fill="${c.shade}"/><circle cx="113" cy="80" r="7" fill="${c.shade}"/>`;
+  s += `<ellipse cx="80" cy="76" rx="33" ry="38" fill="${c.skin}"/>`;
+  if (c.beard) s += `<path d="M50 90 C52 114 66 120 80 120 C94 120 108 114 110 90 C104 106 94 110 80 110 C66 110 56 106 50 90Z" fill="${c.hair}" opacity=".85"/>`;
+  s += `<path d="${HAIR_FRONT[c.style]}" fill="${c.hair}"/>`;
+  if (f.blush) s += `<circle cx="60" cy="93" r="5" fill="#f08a8a" opacity=".35"/><circle cx="100" cy="93" r="5" fill="#f08a8a" opacity=".35"/>`;
+  s += `<circle cx="67" cy="81" r="3.4" fill="${ink}"/><circle cx="93" cy="81" r="3.4" fill="${ink}"/>`;
+  s += `<path d="${f.brows}" stroke="${ink}" stroke-width="2.8" stroke-linecap="round" fill="none"/>`;
+  s += `<path d="M80 84 Q77 92 81 93" stroke="${c.shade}" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  s += `<path d="${f.mouth}" stroke="${c.beard ? '#f3e2d4' : ink}" stroke-width="2.8" stroke-linecap="round" fill="none"/>`;
+  if (c.glasses) s += `<g fill="none" stroke="#1f2937" stroke-width="2.4"><rect x="57" y="72" width="20" height="17" rx="6"/><rect x="83" y="72" width="20" height="17" rx="6"/><path d="M77 79 h6"/></g>`;
+  if (c.headset) s += `<path d="M45 78 C43 34 117 34 115 78" fill="none" stroke="#1f2937" stroke-width="5"/><rect x="38" y="70" width="12" height="20" rx="5" fill="#1f2937"/><path d="M44 90 C46 104 56 108 66 106" stroke="#1f2937" stroke-width="3" fill="none"/><circle cx="67" cy="106" r="4" fill="#1f2937"/>`;
+  return `<g>${s}</g>`;
+}
+
+/* =====================================================================
+   2. SCENES (backgrounds in a 640 x 240 viewBox)
+   ===================================================================== */
+const LOGO = (x,y,s)=>`<g transform="translate(${x} ${y}) scale(${s})"><rect width="40" height="40" rx="10" fill="#0b6b6b"/><path d="M10 21 L20 12 L30 21 V30 H10Z" fill="#fff"/><path d="M20 19 C23 23 24 25 24 26.5 A4 4 0 0 1 16 26.5 C16 25 17 23 20 19Z" fill="#0b6b6b"/></g>`;
+const SCENES = {
+  office: { label:'The Lumaro customer service office', draw:()=>`
+    <rect width="640" height="240" fill="#e4ecf2"/>
+    <rect x="430" y="22" width="180" height="124" rx="8" fill="#ffffff"/><rect x="438" y="30" width="164" height="108" rx="4" fill="#bfe0ee"/>
+    <ellipse cx="480" cy="70" rx="24" ry="9" fill="#fff" opacity=".9"/><ellipse cx="555" cy="96" rx="30" ry="10" fill="#fff" opacity=".8"/>
+    <path d="M438 120 L480 96 L520 112 L560 90 L602 108 V138 H438Z" fill="#9fcfb8"/>
+    <rect x="519" y="30" width="3" height="108" fill="#fff"/>
+    <rect x="300" y="38" width="96" height="72" rx="6" fill="#fff" stroke="#d5dde6"/>${LOGO(328,48,1)}<rect x="316" y="94" width="64" height="6" rx="3" fill="#cfd8e3"/>
+    <rect x="32" y="40" width="120" height="8" rx="4" fill="#cdd8e2"/><rect x="40" y="18" width="18" height="22" rx="2" fill="#f2b84b"/><rect x="62" y="22" width="14" height="18" rx="2" fill="#7aa6c9"/><rect x="80" y="14" width="16" height="26" rx="2" fill="#e07a5f"/>
+    <rect x="596" y="150" width="30" height="40" rx="4" fill="#c46b4b"/><ellipse cx="604" cy="138" rx="9" ry="22" fill="#4c8a5a" transform="rotate(-18 604 138)"/><ellipse cx="620" cy="134" rx="9" ry="24" fill="#3d7a4b" transform="rotate(16 620 134)"/>
+    <rect y="196" width="640" height="44" fill="#cdd8e0"/>`},
+  meeting: { label:'A small meeting room with a whiteboard', draw:()=>`
+    <rect width="640" height="240" fill="#ebe7f3"/>
+    <rect x="250" y="26" width="200" height="118" rx="6" fill="#fff" stroke="#cfc8de" stroke-width="3"/>
+    <path d="M270 50 h110 M270 66 h80 M270 82 h120" stroke="#6a4f9e" stroke-width="3" stroke-linecap="round"/>
+    <path d="M290 110 l20 -16 l20 10 l26 -22 l22 12" stroke="#0b6b6b" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <rect x="20" y="0" width="6" height="240" fill="#d9d2e8"/><rect x="614" y="0" width="6" height="240" fill="#d9d2e8"/>
+    <rect y="196" width="640" height="44" fill="#d9d2e8"/>`},
+  archive: { label:'The server and records room', draw:()=>`
+    <rect width="640" height="240" fill="#e2e8ef"/>
+    ${[0,1,2,3].map(i=>`<rect x="${300+i*82}" y="24" width="70" height="172" rx="6" fill="#2f3b4c"/>`+[0,1,2,3,4,5].map(j=>`<rect x="${308+i*82}" y="${34+j*26}" width="54" height="18" rx="3" fill="#3e4c61"/><circle cx="${354+i*82}" cy="${43+j*26}" r="3" fill="${(i+j)%3? '#4ade80':'#fbbf24'}"/>`).join('')).join('')}
+    <rect y="196" width="640" height="44" fill="#cbd5df"/>`},
+  home: { label:"Marta's living room", draw:()=>`
+    <rect width="640" height="240" fill="#f4ebe1"/>
+    <rect x="420" y="30" width="110" height="80" rx="4" fill="#fff" stroke="#d9c7b3" stroke-width="6"/><path d="M430 100 l30 -30 l24 20 l18 -14 l18 24z" fill="#9fcfb8"/><circle cx="505" cy="52" r="8" fill="#f2b84b"/>
+    <path d="M570 60 h40 l-8 30 h-24z" fill="#f2b84b"/><rect x="588" y="90" width="4" height="106" fill="#8a7563"/>
+    <rect x="20" y="150" width="600" height="50" rx="20" fill="#c9a98a"/>
+    <rect y="196" width="640" height="44" fill="#e6d6c4"/>`}
+};
+
+/** Builds a full scene SVG. cast = [[characterId, mood], ...]. opts.call puts the 2nd character in a phone panel. */
+function sceneSVG(bg, cast, opts={}){
+  const scene = SCENES[bg] || SCENES.office;
+  const n = cast.length;
+  const xs = n===1 ? [240] : n===2 ? [70,390] : [20,230,440];
+  let people = '';
+  cast.forEach(([id,mood],i)=>{
+    if (opts.call && i===1){
+      people += `<g><rect x="368" y="18" width="250" height="204" rx="18" fill="#0f2a3a"/><text x="493" y="44" text-anchor="middle" fill="#fff" font-size="14" font-family="Segoe UI,Arial" font-weight="700">On the line</text>
+        <circle cx="493" cy="130" r="72" fill="#1d4a63"/><g transform="translate(413 52) scale(1)">${person(id,mood)}</g></g>`;
+    } else {
+      people += `<g transform="translate(${xs[i]} 32) scale(1.08)">${person(id,mood)}</g>`;
+    }
+  });
+  // desk + name plates in the foreground
+  let fg = `<rect x="0" y="206" width="640" height="34" fill="#b9875c"/><rect x="0" y="206" width="640" height="5" fill="#a5754d"/>`;
+  cast.forEach(([id],i)=>{
+    const c = CHARACTERS[id];
+    const cx = (opts.call && i===1) ? 493 : xs[i]+86;
+    if (opts.call && i===1) return;
+    fg += `<rect x="${cx-62}" y="214" width="124" height="20" rx="5" fill="#fff" opacity=".95"/><text x="${cx}" y="228" text-anchor="middle" font-size="12" font-family="Segoe UI,Arial" font-weight="700" fill="#1b2433">${c.name}</text>`;
+  });
+  if (opts.call && cast[1]) fg += `<rect x="431" y="214" width="124" height="20" rx="5" fill="#fff"/><text x="493" y="228" text-anchor="middle" font-size="12" font-family="Segoe UI,Arial" font-weight="700" fill="#1b2433">${CHARACTERS[cast[1][0]].name}</text>`;
+  const alt = `${scene.label}. ` + cast.map(([id,m])=> id==='agent' ? `You, wearing a headset, look ${MOOD_WORDS[m]}` : `${CHARACTERS[id].name} (${CHARACTERS[id].role}) looks ${MOOD_WORDS[m]}`).join('. ') + '.';
+  return `<svg class="scene" viewBox="0 0 640 240" role="img" aria-label="${alt}" preserveAspectRatio="xMidYMid slice">${scene.draw()}${people}${fg}</svg>`;
+}
+
+/* =====================================================================
+   3. SCENARIO CONTENT  (edit text here)
+   ---------------------------------------------------------------------
+   Node fields:
+     type     'choice' | 'inbox' | 'call' | 'checklist' | 'redact'
+     step     decision number shown to the learner (null = bonus/recovery screen)
+     day      scenario day when this screen happens (days lost to delays are added on top)
+     title    heading (string or function of state s)
+     scene    { bg, cast:[[character, mood]], call:true? }
+     text     HTML narrative (string or function of state s)
+     options  for choice/call: { text, quality:'best'|'ok'|'poor', fx, react, result, why, cite, next }
+              fx = { trust:+/-, risk:+/-, lost:days, extend:true, flags:{name:true} }
+              react = { character: mood } (expression shown after the choice)
+              next = node id or function(s) returning an id. 'END' = compute ending.
+   Quality scores: best = 2 points, ok = 1, poor = 0.
+   ===================================================================== */
+const DEADLINE_DAYS = 30;          // "one month" (Art. 12(3)) shown as ~30 days for simplicity
+const EXTENDED_DEADLINE_DAYS = 90; // one month + two further months
+const TOTAL_STEPS = 10;
+
+const NODES = {
+
+  /* ---- Warm-up prediction (unscored). The answer is revealed in the inbox feedback. ---- */
+  predict: {
+    type:'predict', step:null, label:'Warm-up', day:0, title:'Before you start: a quick prediction',
+    scene:{ bg:'office', cast:[['agent','neutral']] },
+    text:`<p>A customer sends a complaint email. In the last paragraph she asks to see "everything you've got on file" about her.</p><p>She never mentions the GDPR.</p>`,
+    prompt:'Does that count as a request to access personal data?',
+    options:[
+      { text:'Yes. Any clear request for her own data counts.' },
+      { text:'Only if she mentions the GDPR or her rights.' },
+      { text:'Only once she uses the official request form.' }
+    ],
+    correct:0,
+    next:'inbox'
+  },
+
+  /* ---- 1. Spot the request in the inbox ---- */
+  inbox: {
+    type:'inbox', step:1, day:0, title:'Monday, 09:05: the shared inbox',
+    scene:{ bg:'office', cast:[['agent','neutral']] },
+    text:`<p>You work in customer service at <b>Lumaro Home Services</b>, a home-repair company in Cologne. Five new messages are waiting.</p>
+          <p><b>Open each message and flag any that contain a request to access personal data.</b> Then check your flags.</p>`,
+    emails:[
+      { id:'m1', from:'Marta Feldkamp', time:'08:47', subject:'Re: Job #48213, still not happy',
+        body:`<p>Hello,</p><p>Your technician was here on Tuesday and the bathroom tap is STILL dripping. There's silicone all over the tiles too. I've been a customer for six years and frankly I expected better.</p><p>While you're at it, send me everything you've got on file about me: your notes, whatever the technician wrote, any recordings of my calls. I'd like to see what's been said about me.</p><p>Marta Feldkamp</p>`,
+        isRequest:true, why:`Yes. The last paragraph asks for her personal data. It never says "GDPR" or "access request", and it doesn't need to.` },
+      { id:'m2', from:'Lumaro Intranet', time:'08:30', subject:'Canteen menu, week 10',
+        body:`<p>Monday: lentil soup. Tuesday: schnitzel or roasted vegetables. Wednesday: pasta bar...</p>`, isRequest:false, why:'No. Internal newsletter.' },
+      { id:'m3', from:'Jens Haberland', time:'08:12', subject:'Newsletter',
+        body:`<p>Please stop sending me your marketing emails. Thanks, J. Haberland</p>`, isRequest:false,
+        why:`No, but it still needs action. This is an objection to direct marketing (GDPR Art. 21(2)–(3)), a different right from access.` },
+      { id:'m4', from:'Lea Wendt', time:'07:58', subject:'Appointment + new number',
+        body:`<p>Hi, what time is the technician coming on Thursday? Also my mobile number has changed, it's now 0123 456 0148. Lea</p>`, isRequest:false,
+        why:`No. Updating her phone number is a request to correct data (rectification, GDPR Art. 16), not access.` },
+      { id:'m5', from:'Kranz Sanitär GmbH', time:'07:31', subject:'Invoice INV-2207',
+        body:`<p>Dear Lumaro team, please find attached invoice INV-2207 for the parts delivered in February.</p>`, isRequest:false, why:'No. Supplier invoice.' }
+    ],
+    cite:'GDPR Art. 12(2), Art. 15(1); EDPB Guidelines 01/2022 on the right of access',
+    next:'log'
+  },
+
+  /* ---- 2. Log it and start the clock ---- */
+  log: {
+    type:'choice', step:2, day:0, title:"What do you do with Marta's email?",
+    scene:{ bg:'office', cast:[['agent','neutral'],['dana','neutral']] },
+    text: s => s.flags.inboxMissed
+      ? `<p>Dana Weisskopf from the data protection team stops at your desk and points at Marta's email. "That last paragraph is an access request, you know. It doesn't have to say GDPR."</p>`
+      : `<p>Good catch. Marta's email is mostly a complaint about a dripping tap, but the last paragraph asks to see everything Lumaro holds about her.</p>`,
+    prompt:'What do you do?',
+    options:[
+      { text:'Log it as an access request in the request tracker today, note the date it arrived, and send Marta a short acknowledgement.',
+        quality:'best', fx:{trust:10, risk:-5}, react:{dana:'happy'},
+        result:'The deadline is recorded from day 0 and Marta knows her request is being handled.',
+        why:'The deadline runs from the day the request arrives. A request needs no special wording, form or channel. Lumaro must make the right easy to use.',
+        cite:'GDPR Art. 12(2), Art. 12(3), Art. 15(1)', next:'call' },
+      { text:'Forward the whole email to the Repairs team as a complaint. They can deal with it.',
+        quality:'poor', fx:{trust:-10, risk:20, lost:10, flags:{notLogged:true}}, react:{dana:'concerned'},
+        result:'Repairs fixes the tap and closes the ticket. Nobody picks up the access request for ten days, and the deadline keeps running.',
+        why:'A request is valid even when it is buried in a complaint and never says "GDPR". The one-month deadline started when the email arrived.',
+        cite:'GDPR Art. 12(3), Art. 15(1)', next:'call' },
+      { text:'Reply that she must first fill in Lumaro\'s official "GDPR request form" on the website before you can start.',
+        quality:'ok', fx:{trust:-10, risk:10, lost:4, flags:{formDemanded:true}}, react:{dana:'concerned'},
+        result:'Marta grumbles and fills in the form four days later. Those four days count against your deadline.',
+        why:'You can offer a form to make things easier, but you cannot make it a condition. Her email was already a valid request and the deadline was already running.',
+        cite:'GDPR Art. 12(2), Art. 12(3)', next:'call' }
+    ]
+  },
+
+  /* ---- 3. Phone call: identity under time pressure ---- */
+  call: {
+    type:'call', step:3, day:2, title: s => `Day ${dayNow(s)}: Marta calls`,
+    scene:{ bg:'office', cast:[['agent','neutral'],['marta','concerned']], call:true },
+    text: s => (s.flags.notLogged
+      ? `<div class="bubble"><span class="who">Marta Feldkamp</span>"I emailed you nearly two weeks ago asking for my data and I've heard <em>nothing</em>! Just send everything to my new email, marta.f.private@example.net. Today."</div>`
+      : `<div class="bubble"><span class="who">Marta Feldkamp</span>"Hi, Marta Feldkamp here. I got your email. Can you send everything to my new private address instead, marta.f.private@example.net? I don't want it going to my work account."</div>`)
+      + `<p>She is calling from a number that is <b>not</b> on her customer record, and the new email address isn't either.</p>`,
+    prompt:'What do you say?',
+    options:[
+      { text:'Check it\'s her with details already on file (customer number, job address, visit date). Then confirm the new address with a code sent to her email on file.',
+        quality:'best', fx:{trust:5, risk:-5}, react:{marta:'neutral'},
+        result:'Marta answers easily. She is a little impatient but reassured that you are careful with her data.',
+        why:'If you have reasonable doubts about who is asking, you may ask for the extra information needed to confirm identity. Use what you already hold and don\'t collect more than you need.',
+        cite:'GDPR Art. 12(6), Art. 5(1)(c), Recital 64', next:'fee' },
+      { text:'Ask her to email you a scan of her passport and a recent utility bill before you do anything else.',
+        quality:'ok', fx:{trust:-15, risk:5, lost:3, flags:{excessiveId:true}}, react:{marta:'angry'},
+        result:'Marta is offended and takes three days to send the scans. Lumaro now holds a passport copy it never needed.',
+        why:'Identity checks must be proportionate. You could confirm who she is from information you already hold, so ID documents add delay and more data to protect.',
+        cite:'GDPR Art. 12(6), Art. 5(1)(c)', next:'fee' },
+      { text:'Reassure her and promise to send everything to the new address as soon as it\'s ready.',
+        quality:'poor', fx:{trust:10, risk:20, flags:{newAddress:true}}, react:{marta:'happy'},
+        result:'Marta is pleased, for now. But you have promised to send her whole file to an address nobody has checked.',
+        why:'Sending personal data to an unchecked address risks disclosing it to the wrong person. Resolve reasonable doubts about identity first. Protect the data with appropriate security.',
+        cite:'GDPR Art. 12(6), Art. 5(1)(f), Art. 32', next:'fee' }
+    ]
+  },
+
+  /* ---- 4. Manager wants a shortcut ---- */
+  fee: {
+    type:'choice', step:4, day:4, title:'Tobias has an idea',
+    scene:{ bg:'meeting', cast:[['agent','neutral'],['tobias','angry']] },
+    text:`<div class="bubble"><span class="who">Tobias Rehnert, team lead</span>"Feldkamp again? She's threatening a one-star review. Tell her data requests cost €25 in admin, that usually puts people off. Or just say the request is unfounded. She only wants ammunition for her complaint."</div>`,
+    prompt:'How do you respond?',
+    options:[
+      { text:'Tell Tobias the response must be free and a dispute doesn\'t make the request unfounded. Carry on.',
+        quality:'best', fx:{trust:5, risk:-5}, react:{tobias:'concerned'},
+        result:'Tobias sighs: "Fine, by the book then." Marta never hears about a fee.',
+        why:'The first copy must be free. A fee or a refusal is only possible if a request is manifestly unfounded or excessive. Lumaro would have to prove that.',
+        note:'The EU Court of Justice has held that the first copy is free even when the person wants it for another purpose, such as a dispute (C-307/22).',
+        cite:'GDPR Art. 12(5), Art. 15(3); CJEU C-307/22 (26 Oct 2023)', next:'search' },
+      { text:'Email Marta that a €25 administration fee applies to data requests.',
+        quality:'poor', fx:{trust:-20, risk:25, flags:{feeCharged:true}}, react:{tobias:'happy'},
+        result:'Marta replies within the hour, and she has copied in the data protection team.',
+        why:'The first copy must be free. A reasonable fee is only allowed for further copies, or for requests that are manifestly unfounded or excessive.',
+        cite:'GDPR Art. 12(5), Art. 15(3)', next:'feeReply' },
+      { text:'Tell Marta her request is "manifestly unfounded" because she is in a dispute with Lumaro, so it won\'t be processed.',
+        quality:'poor', fx:{trust:-30, risk:35, flags:{refused:true}}, react:{tobias:'happy'},
+        result:'Marta replies within the hour. She is furious.',
+        why:'"Manifestly unfounded" is a high bar and Lumaro would have to prove it. People do not have to give reasons for an access request. Wanting the data for a dispute does not make it unfounded.',
+        cite:'GDPR Art. 12(4), Art. 12(5); CJEU C-307/22', next:'refuseReply' }
+    ]
+  },
+
+  /* ---- Recovery A: after charging a fee ---- */
+  feeReply: {
+    type:'choice', step:null, day:5, title:'Marta pushes back',
+    scene:{ bg:'office', cast:[['agent','concerned'],['dana','concerned']] },
+    text:`<div class="bubble"><span class="who">Marta Feldkamp, by email</span>"A fee? To see my own data? I'm looking this up right now."</div>
+          <div class="bubble"><span class="who">Dana Weisskopf, DPO</span>"I've been copied in. Can we talk about this fee?"</div>`,
+    prompt:'What now?',
+    options:[
+      { text:'Withdraw the fee, apologize to Marta and confirm the response will be free and on time.',
+        quality:'ok', fx:{trust:10, risk:-15, flags:{feeRecovered:true}}, react:{dana:'neutral'},
+        result:'Marta accepts the apology, coolly. Dana records it as a lesson learned.',
+        why:'Correcting a mistake quickly limits the damage. The response itself must be free.',
+        cite:'GDPR Art. 12(5), Art. 15(3)', next:'search' },
+      { text:'Stand firm: no fee, no data.',
+        quality:'poor', fx:{trust:-30, risk:40, flags:{stoodFirm:true}}, react:{dana:'angry'},
+        result:'Marta stops replying. Two weeks later, a letter arrives from the data protection supervisory authority.',
+        why:'Everyone has the right to complain to a supervisory authority if they think their data protection rights have been infringed.',
+        cite:'GDPR Art. 12(5), Art. 77', next:'END' }
+    ]
+  },
+
+  /* ---- Recovery B: after refusing ---- */
+  refuseReply: {
+    type:'choice', step:null, day:5, title:'"I\'m going to the authority"',
+    scene:{ bg:'office', cast:[['agent','concerned'],['dana','concerned']] },
+    text:`<div class="bubble"><span class="who">Marta Feldkamp, by email</span>"Unfounded? I just want to know what you've written about me. If I don't get it, I'm complaining to the data protection authority."</div>
+          <div class="bubble"><span class="who">Dana Weisskopf, DPO</span>"Marta forwarded me this. We'd struggle to prove this request is manifestly unfounded."</div>`,
+    prompt:'What now?',
+    options:[
+      { text:'Reverse the refusal, apologize and confirm the request is being handled within the original deadline.',
+        quality:'ok', fx:{trust:15, risk:-20, flags:{refusalRecovered:true}}, react:{dana:'neutral'},
+        result:'Marta replies: "Fine. I\'ll wait." Trust is dented but the request is back on track.',
+        why:'A refusal must be justified, and the person must be told the reasons and that they can complain or go to court. Here it wasn\'t justified, so withdrawing it was right.',
+        cite:'GDPR Art. 12(4), Art. 12(5)', next:'search' },
+      { text:'Stand firm and close the request.',
+        quality:'poor', fx:{trust:-30, risk:40, flags:{stoodFirm:true}}, react:{dana:'angry'},
+        result:'Marta lodges a complaint with the supervisory authority that afternoon.',
+        why:'Everyone has the right to complain to a supervisory authority if they think their data protection rights have been infringed.',
+        cite:'GDPR Art. 12(4), Art. 77', next:'END' }
+    ]
+  },
+
+  /* ---- 5. Checklist: where to search ---- */
+  search: {
+    type:'checklist', step:5, day:6, title:'Finding everything',
+    scene:{ bg:'archive', cast:[['agent','neutral']] },
+    text:`<p>Time to gather Marta's data. Lumaro uses several systems.</p>`,
+    legend:'Select every place you need to search for Marta\'s personal data.',
+    items:[
+      { id:'crm', label:'CRM customer record', correct:true, why:'Her core record: name, contact details, history.' },
+      { id:'tickets', label:'Job tickets and photos for job #48213', correct:true, why:'Tickets and photos linked to her are her personal data.' },
+      { id:'notes', label:'Technician field-app notes', correct:true, why:'Free-text notes about her count too, including opinions.' },
+      { id:'calls', label:'Call recordings in the phone system', correct:true, why:'Recordings of her calls are her personal data.' },
+      { id:'mail', label:'Customer service email and chat history', correct:true, why:'Her messages and your replies.' },
+      { id:'billing', label:'Billing and payment records', correct:true, why:'Invoices and payments relate to her.' },
+      { id:'news', label:'Newsletter / marketing mailing list', correct:true, why:'She is subscribed, so her email address and preferences are held there.' },
+      { id:'hr', label:'HR file of the technician who visited', correct:false, why:'That is Kai\'s personal data, not Marta\'s. Don\'t pull it into her response.' },
+      { id:'other', label:'Records of "M. Feldkamp" in Bremen (different customer number)', correct:false, why:'A different person. Including their data would be a disclosure to the wrong person.' }
+    ],
+    evaluate(sel, s){
+      const missed = this.items.filter(i=>i.correct && !sel.has(i.id));
+      const wrong  = this.items.filter(i=>!i.correct && sel.has(i.id));
+      const flags = {};
+      if (missed.length) flags.incompleteSearch = true;
+      if (missed.some(i=>i.id==='notes')) flags.missedNotes = true;
+      if (wrong.length) flags.overCollected = true;
+      const quality = (!missed.length && !wrong.length) ? 'best' : (missed.length<=1 ? 'ok' : 'poor');
+      return { quality, fx:{ risk: quality==='best' ? -5 : missed.length*6 + wrong.length*8, flags },
+        result: quality==='best' ? 'You have every system covered, and nothing that isn\'t hers.'
+          : `You missed ${missed.length} source${missed.length===1?'':'s'}${wrong.length?` and included ${wrong.length} that ${wrong.length===1?"isn't":"aren't"} hers`:''}.`,
+        why:'The right of access covers all personal data Lumaro holds about her, in every system. That includes free-text notes, recordings and marketing lists. Personal data is any information relating to an identified or identifiable person.',
+        cite:'GDPR Art. 4(1), Art. 15(1), Art. 15(3)' };
+    },
+    next:'notes'
+  },
+
+  /* ---- 6. The awkward technician notes ---- */
+  notes: {
+    type:'choice', step:6, day:8, title:'"We are not sending that"',
+    scene:{ bg:'meeting', cast:[['agent','concerned'],['tobias','angry']] },
+    text: s => (s.flags.missedNotes ? `<p>You hadn't searched the technician app, but Kai mentions that he typed notes on site, so you pull them.</p>` : '')
+      + `<p>In the field-app notes Kai Brenner, the technician, has written: <em>"Customer difficult, argues about everything. Avoid weekend slots."</em></p>
+      <div class="bubble"><span class="who">Tobias Rehnert</span>"We are <em>not</em> sending that. Delete it, or just leave it out. She'll never know."</div>`,
+    prompt:'What do you do with the notes?',
+    options:[
+      { text:'Include the notes. They are Marta\'s personal data, even if they are unflattering.',
+        quality:'best', fx:{trust:-5, risk:-10}, react:{tobias:'concerned'},
+        result:'Tobias winces. You suggest a team reminder: write factual, professional notes, because customers can ask to see them.',
+        why:'Opinions and comments about a person are their personal data too, so they belong in the copy.',
+        cite:'GDPR Art. 4(1), Art. 15(1), Art. 15(3); CJEU C-434/16 (Nowak)', next:'redact' },
+      { text:'Delete the comment from the field app before you export the data.',
+        quality:'poor', fx:{trust:-5, risk:45, flags:{deleted:true}}, react:{tobias:'happy'},
+        result:'The comment is gone, but the app\'s audit log shows it was deleted after the request arrived. Kai had also mentioned "his notes" to Marta on site.',
+        why:'Deleting data to get round a pending access request defeats the right of access and is not fair or transparent processing.',
+        cite:'GDPR Art. 5(1)(a), Art. 15(1)', next:'redact' },
+      { text:'Leave the notes out of the response but keep them in the system.',
+        quality:'poor', fx:{trust:-5, risk:35, flags:{withheld:true}}, react:{tobias:'happy'},
+        result:'The response will look complete, but it isn\'t.',
+        why:'The copy must include the personal data being processed unless a legal exemption applies. Embarrassment is not an exemption.',
+        cite:'GDPR Art. 15(1), Art. 15(3)', next:'redact' }
+    ]
+  },
+
+  /* ---- 7. Redact third-party data ---- */
+  redact: {
+    type:'redact', step:7, day:10, title:'Redact the job ticket',
+    scene:{ bg:'office', cast:[['agent','neutral']] },
+    text:`<p>The job ticket for Marta's repair mentions other people. <b>Select each piece of information that must be blacked out</b> before Marta gets her copy. Select again to undo.</p>`,
+    // Document text: [[id]] placeholders are replaced by clickable tokens.
+    doc:`<b>Customer:</b> [[name]] · [[addr]]<br>
+         <b>Customer phone:</b> [[phone]]<br>
+         <b>Visit 03.03:</b> bathroom tap replaced. Technician: Kai Brenner.<br>
+         <b>Note:</b> Neighbor [[nbname]] called to complain about noise and water on the stairs. Call back on [[nbphone]].<br>
+         <b>Note:</b> Customer [[comment]].<br>
+         <b>Parts:</b> spare cartridge collected from previous job at [[other]].<br>
+         <b>Scheduling:</b> reach Kai on his private mobile [[kai]].`,
+    tokens:{
+      name:   { text:'Marta Feldkamp', third:false, why:'Marta\'s own name. Keep it.' },
+      addr:   { text:'Ahornweg 7, 50823 Köln', third:false, why:'Her own address. Keep it.' },
+      phone:  { text:'0123 456 0142', third:false, why:'Her own phone number. Keep it.' },
+      comment:{ text:'"difficult, avoid weekend slots"', third:false, why:'An opinion about Marta is her personal data. Awkward is not a reason to redact.' },
+      nbname: { text:'Herr Albers (flat 2B)', third:true, why:'Identifies the neighbor, a third party.' },
+      nbphone:{ text:'0123 456 0199', third:true, why:'The neighbor\'s phone number.' },
+      other:  { text:'Frau Y. Sander, Ahornweg 21', third:true, why:'Another customer\'s name and address.' },
+      kai:    { text:'0123 456 0987', third:true, why:'An employee\'s private number, which isn\'t needed for Marta\'s copy.' }
+    },
+    evaluate(sel){
+      const t = this.tokens;
+      const missed = Object.keys(t).filter(k=>t[k].third && !sel.has(k));
+      const over   = Object.keys(t).filter(k=>!t[k].third && sel.has(k));
+      const flags = {};
+      if (missed.length) flags.thirdPartyLeak = true;
+      if (over.length) flags.overRedacted = true;
+      const quality = (!missed.length && !over.length) ? 'best' : (!missed.length ? 'ok' : 'poor');
+      return { quality, missed, over,
+        fx:{ trust: over.length ? -5*over.length : 5, risk: missed.length ? 12*missed.length : -5, flags },
+        result: quality==='best' ? 'Clean: other people are protected, and Marta still sees everything about herself.'
+          : quality==='ok' ? `Other people are protected, but you also blacked out ${over.length} item${over.length>1?'s':''} of Marta's own data.`
+          : `${missed.length} piece${missed.length>1?'s':''} of other people's data would go out to Marta unredacted.`,
+        why:'A copy must not adversely affect the rights and freedoms of others. So redact other people\'s details. Do not redact Marta\'s own data just because it is awkward.',
+        note:'Kai\'s name stays because he acted in his work role. Many organizations disclose staff names in that context. Follow your own policy.',
+        cite:'GDPR Art. 15(4)' };
+    },
+    next:'deadline'
+  },
+
+  /* ---- 8. The deadline squeeze ---- */
+  deadline: {
+    type:'choice', step:8, day:14, title:'The recordings problem',
+    scene:{ bg:'archive', cast:[['agent','concerned']] },
+    text: s => `<p>IT replies about Marta's call recordings: they are in archive storage and restoring them will take <b>about three weeks</b>.</p>
+      <p>The tracker shows <b>${daysLeft(s)} days left</b> on the one-month deadline.</p>`,
+    prompt:'What do you do?',
+    options:[
+      { text:'Message Marta now. Explain why the recordings need extra time, give a target date and send everything else by the original deadline.',
+        quality:'best', fx:{trust:10, risk:-10, extend:true},
+        result:'Marta replies: "Thanks for telling me." You have extended properly and kept her informed. You note the reason in the tracker.',
+        why:'You may extend by up to two further months where necessary, given the complexity and number of requests. You must tell the person within one month of receipt and give the reasons. Sending what is ready now shows good faith.',
+        note:'Whether a restore delay justifies an extension is a judgment call. Record your reasoning in the tracker.',
+        cite:'GDPR Art. 12(3)', next:'content' },
+      { text:'Say nothing and send everything together once the recordings are restored.',
+        quality:'poor', fx:{trust:-15, risk:35, lost:12, flags:{waited:true}},
+        result:'Three weeks pass in silence. By the time the bundle is ready, the one-month deadline has passed.',
+        why:'Without an extension notified within the first month, with reasons, the deadline stays at one month.',
+        cite:'GDPR Art. 12(3)', next:'content' },
+      { text:'Ask Marta whether she really needs the call recordings, hoping she\'ll drop them.',
+        quality:'ok', fx:{trust:-5, risk:5, lost:2, extend:true, flags:{askedDrop:true}},
+        result:'Two days later Marta replies: "Yes, I want them." You then explain the delay and extend, but you\'ve lost two days and some goodwill.',
+        why:'Where a controller holds a lot of data it may ask the person to say which information the request relates to, but they are still entitled to all of it. Any extension must be notified within the month, with reasons.',
+        cite:'GDPR Art. 12(3), Recital 63', next:'content' }
+    ]
+  },
+
+  /* ---- 9. Checklist: what the response must contain ---- */
+  content: {
+    type:'checklist', step:9, day:18, title:'Drafting the response',
+    scene:{ bg:'office', cast:[['agent','neutral'],['dana','neutral']] },
+    text:`<p>Dana offers to review your draft cover letter before it goes out.</p>`,
+    legend:'Which of these must the response include? Select all that apply.',
+    items:[
+      { id:'copy', label:'A copy of the personal data Lumaro holds about her', correct:true, why:'Art. 15(1) and 15(3).' },
+      { id:'purp', label:'The purposes of the processing', correct:true, why:'Art. 15(1)(a).' },
+      { id:'cat',  label:'The categories of personal data concerned', correct:true, why:'Art. 15(1)(b).' },
+      { id:'rec',  label:'Who the data has been shared with (e.g. the plumbing subcontractor, payment provider)', correct:true, why:'Recipients or categories of recipient, Art. 15(1)(c).' },
+      { id:'ret',  label:'How long the data will be kept, or the criteria used to decide', correct:true, why:'Art. 15(1)(d).' },
+      { id:'rights', label:'Her rights to rectification, erasure, restriction and to object', correct:true, why:'Art. 15(1)(e).' },
+      { id:'dpa',  label:'Her right to complain to a supervisory authority', correct:true, why:'Art. 15(1)(f).' },
+      { id:'src',  label:'Where data not collected from her came from (e.g. "a neighbor\'s report", without identifying him)', correct:true, why:'Any available information on the source, Art. 15(1)(g), balanced with Art. 15(4).' },
+      { id:'adm',  label:'Whether automated decision-making is used (here: it isn\'t)', correct:true, why:'Art. 15(1)(h).' },
+      { id:'nb',   label:'The neighbor\'s name and number, so she can sort out the dispute herself', correct:false, why:'Third-party data. This would breach Art. 15(4).' },
+      { id:'waiver', label:'A waiver for Marta to sign, agreeing not to take further action', correct:false, why:'Not part of an access response. Access must not depend on conditions.' },
+      { id:'stats', label:'Lumaro\'s annual customer-satisfaction statistics', correct:false, why:'Not her personal data and not required.' }
+    ],
+    evaluate(sel){
+      const missed = this.items.filter(i=>i.correct && !sel.has(i.id));
+      const wrong  = this.items.filter(i=>!i.correct && sel.has(i.id));
+      const flags = {};
+      if (missed.length) flags.incompleteResponse = true;
+      if (wrong.some(i=>i.id==='nb')) flags.thirdPartyLeak = true;
+      if (wrong.some(i=>i.id==='waiver')) flags.waiver = true;
+      const quality = (!missed.length && !wrong.length) ? 'best' : (missed.length<=2 && !flags.thirdPartyLeak ? 'ok' : 'poor');
+      return { quality, fx:{ trust: wrong.length ? -5*wrong.length : 5, risk: quality==='best' ? -5 : missed.length*4 + wrong.length*8, flags },
+        result: quality==='best' ? 'Dana reads your draft: "Nothing to add. That\'s complete."'
+          : `Dana's review: ${missed.length} required item${missed.length===1?'':'s'} missing${wrong.length?`, ${wrong.length} that shouldn't be there`:''}.`,
+        why:'Next to the copy, Art. 15(1) lists the information the response must include. That covers purposes, categories, recipients, retention, the other rights, the right to complain, the source and automated decision-making.',
+        note:'If data goes to a third country, Art. 15(2) adds information on the safeguards used.',
+        cite:'GDPR Art. 15(1)(a)–(h), Art. 15(3), Art. 15(4)' };
+    },
+    next:'deliver'
+  },
+
+  /* ---- 10. Delivery ---- */
+  deliver: {
+    type:'choice', step:10, day:25, title:'Sending it',
+    scene:{ bg:'office', cast:[['agent','neutral']] },
+    text: s => {
+      let t = `<p>The response is ready: 64 pages of records plus the cover letter.</p>`;
+      if (daysLeft(s) < 0) t += `<p><b>The tracker shows the deadline passed ${-daysLeft(s)} days ago.</b></p>`;
+      if (s.flags.newAddress) t += `<p>Marta has emailed to remind you that you promised to use her new private address, marta.f.private@example.net.</p>`;
+      return t;
+    },
+    prompt:'How do you send it?',
+    options:[
+      { text:'Upload it to Lumaro\'s secure portal. Send the link to her email on file and a one-time code by SMS to her phone on file.',
+        quality:'best', fx:{trust:10, risk:-10}, react:{agent:'happy'},
+        result: 'The download is logged a few minutes later. Delivered securely, in electronic form, to a verified person.',
+        why:'Marta asked by email, so send the information in a commonly used electronic form unless she asks otherwise. Protect it with appropriate security.',
+        cite:'GDPR Art. 12(3), Art. 15(3), Art. 32', next:'END' },
+      { text:'Print all 64 pages and send them by standard post.',
+        quality:'ok', fx:{trust:-10, risk:5, lost:3, flags:{posted:true}},
+        result:'The envelope arrives three days later with one corner torn. Marta asks why she didn\'t get it by email.',
+        why:'Marta asked by email, so unless she asks otherwise the information should be provided in a commonly used electronic form.',
+        cite:'GDPR Art. 12(3), Art. 15(3)', next:'END' },
+      { text:'Email everything as an ordinary attachment to marta.f.private@example.net.',
+        quality:'poor', fx:{trust:5, risk:25, flags:{unverifiedSend:true}},
+        result:'This time the address really was Marta\'s. Dana\'s audit still flags it: unverified address, no encryption, a near miss.',
+        why:'Sending a full data file to an unverified address without protection risks a disclosure to the wrong person.',
+        cite:'GDPR Art. 5(1)(f), Art. 12(6), Art. 32', next:'END' }
+    ]
+  }
+};
+
+/* ---- Endings (chosen by computeEnding below) ---- */
+const ENDINGS = {
+  exemplary: {
+    badge:'Exemplary', title:'On time and complete',
+    scene:{ bg:'home', cast:[['marta','happy']] },
+    text: s => `<p>Marta's response arrived on day ${dayNow(s)}, complete and securely delivered, with the recordings following on the date you promised.</p>
+      <div class="bubble"><span class="who">Marta Feldkamp</span>"Thank you. Honestly, that was clearer than I expected. I can see what your technician wrote, though. We should talk about that."</div>
+      <p>Dana adds your file to the team's training examples.</p>`,
+    rule:'If Marta now asks for the comment to be corrected or deleted, that is a new request (GDPR Art. 16 or Art. 17). Log it the same way, with the date it arrived.'
+  },
+  clumsy: {
+    badge:'Compliant, but clumsy', title:'She got her data, eventually',
+    scene:{ bg:'home', cast:[['marta','concerned']] },
+    text: () => `<p>Marta received a lawful response. The way it was handled cost time, trust or both.</p>`,
+    rule:'Log the date on day one and check identity with what you already hold. Small delays early on add up later.'
+  },
+  leak: {
+    badge:'Breach: third-party data', title:'Other people\'s data went out',
+    scene:{ bg:'office', cast:[['agent','concerned'],['dana','angry']] },
+    text: () => `<p>Marta's copy included details about other people. She phoned the neighbor, Herr Albers, to "clear the air", and he has now complained to Lumaro.</p>
+      <p>Dana has to treat this as a personal data breach: assess the risk, document it and notify the supervisory authority within 72 hours of becoming aware, unless the breach is unlikely to result in a risk to people's rights and freedoms.</p>
+      <p><span class="cite">GDPR Art. 15(4), Art. 4(12), Art. 33</span></p>`,
+    rule:'Before a copy goes out, read every line and ask: whose data is this?'
+  },
+  complaint: {
+    badge:'Breach: complaint to the authority', title:'Marta complained to the supervisory authority',
+    scene:{ bg:'office', cast:[['agent','concerned'],['dana','concerned']] },
+    text: () => `<p>Marta has lodged a complaint with the data protection supervisory authority. It has asked Lumaro to explain how the request was handled. Authorities can investigate and use corrective powers, which include ordering compliance and imposing fines.</p>
+      <p><span class="cite">GDPR Art. 77, Art. 58, Art. 83</span></p>`,
+    rule:'Do not refuse, charge or hold back data unless you can prove the GDPR allows it. When in doubt, ask your DPO and keep to the deadline.'
+  }
+};
+
+/* Messages explaining each flag on the ending screen. */
+const FLAG_NOTES = {
+  inboxMissed:'The request was missed in the inbox at first.',
+  notLogged:'The request sat unlogged for ten days (Art. 12(3)).',
+  formDemanded:'Marta was made to fill in a form before you started (Art. 12(2)).',
+  excessiveId:'Passport and utility-bill scans were requested when on-file details would have done (Art. 12(6), 5(1)(c)).',
+  newAddress:'You promised delivery to an unverified email address (Art. 12(6)).',
+  feeCharged:'A fee was demanded for the first copy (Art. 12(5), 15(3)).',
+  feeRecovered:'The fee was withdrawn after Marta pushed back.',
+  refused:'The request was wrongly refused as "manifestly unfounded" (Art. 12(5)).',
+  refusalRecovered:'The refusal was reversed after Marta threatened a complaint.',
+  stoodFirm:'Lumaro refused to engage and Marta complained (Art. 77).',
+  incompleteSearch:'Not every system was searched (Art. 15(1)).',
+  overCollected:'Records that weren\'t Marta\'s were pulled into the search.',
+  deleted:'Data was deleted after the request arrived (Art. 5(1)(a)).',
+  withheld:'The technician\'s notes were withheld without an exemption (Art. 15(1), 15(3)).',
+  overRedacted:'Some of Marta\'s own data was blacked out.',
+  thirdPartyLeak:'Third-party data was disclosed (Art. 15(4)).',
+  waited:'You went silent instead of notifying an extension (Art. 12(3)).',
+  askedDrop:'Days were lost trying to talk Marta out of the recordings.',
+  incompleteResponse:'The cover letter was missing information required by Art. 15(1).',
+  waiver:'A waiver was attached to the response.',
+  posted:'The response went by post despite an electronic request (Art. 15(3)).',
+  unverifiedSend:'The file was emailed unencrypted to an unverified address (Art. 32).',
+  late:'The response was late (Art. 12(3)).'
+};
+const BREACH_FLAGS = ['stoodFirm','deleted','withheld','late'];
+const CLUMSY_FLAGS = ['inboxMissed','notLogged','formDemanded','excessiveId','newAddress','feeRecovered','refusalRecovered',
+                      'incompleteSearch','overCollected','overRedacted','askedDrop','incompleteResponse','waiver','posted','unverifiedSend'];
+
+/** Decides the ending from the final state. Order matters: worst outcome wins. */
+function computeEnding(s){
+  if (s.day + s.lost > s.deadline) s.flags.late = true;
+  if (BREACH_FLAGS.some(f=>s.flags[f]) || s.risk >= 80) return 'complaint';
+  if (s.flags.thirdPartyLeak) return 'leak';
+  if (CLUMSY_FLAGS.some(f=>s.flags[f]) || s.risk > 35 || score(s) < 85) return 'clumsy';
+  return 'exemplary';
+}
+
+/* =====================================================================
+   4. ENGINE  (you shouldn't need to edit below to change text)
+   ===================================================================== */
+const $ = sel => document.querySelector(sel);
+const main = $('#main'), live = $('#live');
+const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let S = null;          // current state
+let callTimer = null;  // phone-call pressure timer
+
+function freshState(){
+  return { trust:50, risk:20, day:0, lost:0, deadline:DEADLINE_DAYS, extended:false, flags:{}, log:[], points:0, max:0, moods:{}, ending:null };
+}
+const val = (v, s) => typeof v === 'function' ? v(s) : v;
+const clamp = n => Math.max(0, Math.min(100, n));
+function dayNow(s){ return s.day + s.lost; }
+function daysLeft(s){ return s.deadline - dayNow(s); }
+function score(s){ return s.max ? Math.round(s.points / s.max * 100) : 0; }
+const QUALITY = { best:{label:'Best practice', pts:2}, ok:{label:'Acceptable, with costs', pts:1}, poor:{label:'Risky', pts:0} };
+function announce(msg){ live.textContent = ''; setTimeout(()=>{ live.textContent = msg; }, 60); }
+
+/* ---------- HUD ---------- */
+function updateHud(prev){
+  $('#trustFill').style.width = S.trust + '%';
+  $('#riskFill').style.width = S.risk + '%';
+  $('#riskFill').style.backgroundColor = S.risk >= 60 ? '#b42318' : S.risk >= 35 ? '#c26a00' : '#3b8f5a';
+  $('#trustVal').textContent = S.trust; $('#riskVal').textContent = S.risk;
+  [['trust','Customer trust'],['risk','Compliance risk']].forEach(([k,l])=>{
+    const bar = $('#'+k+'Bar'); bar.setAttribute('aria-valuenow', S[k]); bar.setAttribute('aria-valuetext', `${l}: ${S[k]} out of 100`);
+  });
+  const left = daysLeft(S), box = $('#daysBox');
+  $('#daysVal').textContent = Math.abs(left);
+  $('#daysUnit').textContent = (left < 0 ? 'days overdue' : (left === 1 ? 'day left' : 'days left')) + (S.extended ? ' (extended)' : '');
+  box.classList.toggle('warn', left >= 0 && left <= 10);
+  box.classList.toggle('bad', left < 0 || left <= 3);
+  if (prev){
+    showDelta('trust', S.trust - prev.trust, true);
+    showDelta('risk', S.risk - prev.risk, false);
+    if (dayNow(S) !== prev.dayNow || S.deadline !== prev.deadline) pulse(box);
+  }
+}
+function showDelta(k, d, upIsGood){
+  if (!d) return;
+  const el = $('#'+k+'Delta');
+  el.textContent = (d > 0 ? '+' : '−') + Math.abs(d);
+  el.className = 'delta show ' + (d > 0 ? (upIsGood ? 'up-good' : 'up-bad') : (upIsGood ? 'down-bad' : 'down-good'));
+  pulse(el.parentElement);
+  clearTimeout(el._t); el._t = setTimeout(()=>{ el.className = 'delta'; }, 1800);
+}
+function pulse(el){ if (reduceMotion) return; el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
+
+function applyFx(fx){
+  const prev = { trust:S.trust, risk:S.risk, dayNow:dayNow(S), deadline:S.deadline };
+  fx = fx || {};
+  S.trust = clamp(S.trust + (fx.trust||0));
+  S.risk  = clamp(S.risk + (fx.risk||0));
+  S.lost += fx.lost || 0;
+  if (fx.extend && !S.extended && daysLeft(S) >= 0){ S.extended = true; S.deadline = EXTENDED_DEADLINE_DAYS; }
+  Object.assign(S.flags, fx.flags || {});
+  updateHud(prev);
+}
+
+/* ---------- Shared screen frame ---------- */
+function frame(node, inner){
+  const cast = node.scene.cast.map(([id,m])=>[id, S.moods[id] || m]);
+  const stepHtml = node.step
+    ? `<span>Decision ${node.step} of ${TOTAL_STEPS}</span><span class="dots" aria-hidden="true">${Array.from({length:TOTAL_STEPS},(_,i)=>`<i class="${i+1<node.step?'done':i+1===node.step?'now':''}"></i>`).join('')}</span>`
+    : `<span>${node.label || 'Complication'}</span>`;
+  main.innerHTML = `<div id="sceneWrap">${sceneSVG(node.scene.bg, cast, {call:node.scene.call})}</div>
+    <div class="body">
+      <div class="eyebrow">${stepHtml}<span>Day ${dayNow(S)}</span></div>
+      <h2 id="nodeTitle" tabindex="-1">${val(node.title, S)}</h2>
+      <div class="narr">${val(node.text, S)}</div>
+      ${inner}
+      <div id="fb"></div>
+    </div>`;
+  $('#nodeTitle').focus({preventScroll:true});
+  toTop();
+}
+function redrawScene(node){
+  const cast = node.scene.cast.map(([id,m])=>[id, S.moods[id] || m]);
+  $('#sceneWrap').innerHTML = sceneSVG(node.scene.bg, cast, {call:node.scene.call});
+}
+
+/** Scrolls the top of the card into view. Inside an iframe this also scrolls the host page (e.g. Rise). */
+function toTop(){ const top = $('.app'); try { top.scrollIntoView({ block:'start', behavior: reduceMotion ? 'auto' : 'smooth' }); } catch(e){ top.scrollIntoView(); } }
+
+/** Records a decision, shows the feedback panel and a Continue button. */
+function showFeedback(node, choiceText, r, next, extraHtml=''){
+  const q = QUALITY[r.quality];
+  S.points += q.pts; S.max += 2;
+  applyFx(r.fx);
+  if (r.react){ Object.assign(S.moods, r.react); redrawScene(node); }
+  S.log.push({ title: val(node.title, S), step: node.step, choice: choiceText, quality: r.quality, result: r.result, cite: r.cite });
+  const fb = $('#fb');
+  fb.innerHTML = `<section class="feedback ${r.quality}" aria-labelledby="fbTitle">
+      <span class="badge ${r.quality}">${q.label}</span><h3 id="fbTitle" tabindex="-1">What happened</h3>
+      <p>${r.result}</p>${extraHtml}
+      <p><b>Why is it important?</b> ${r.why}</p>${r.note ? `<p><b>Note:</b> ${r.note}</p>` : ''}
+      <span class="cite">${r.cite}</span>
+      <div class="row"><button class="btn" id="nextBtn" type="button">Continue <span aria-hidden="true">→</span></button></div>
+    </section>`;
+  announce(`${q.label}. ${r.result}`);
+  $('#fbTitle').focus();
+  $('#nextBtn').addEventListener('click', ()=> go(next));
+}
+
+/* ---------- Renderers per node type ---------- */
+function renderChoice(node){
+  const opts = node.options;
+  frame(node, `<p class="prompt" id="promptLbl">${node.prompt || 'What do you do?'}</p>
+    <ul class="choices" aria-labelledby="promptLbl">${opts.map((o,i)=>`<li><button class="choice" type="button" data-i="${i}" aria-pressed="false"><span class="key" aria-hidden="true">${'ABC'[i]}</span><span>${o.text}</span></button></li>`).join('')}</ul>`);
+  main.querySelectorAll('.choice').forEach(b=> b.addEventListener('click', ()=>{
+    stopCallTimer();
+    const o = opts[+b.dataset.i];
+    main.querySelectorAll('.choice').forEach(x=>{ x.disabled = true; });
+    b.setAttribute('aria-pressed','true');
+    showFeedback(node, o.text, o, val(o.next, S));
+  }));
+}
+
+function renderCall(node){
+  renderChoice(node);
+  // Pressure bar: purely atmospheric. It never ends the call or costs points (WCAG 2.2.1).
+  const bar = document.createElement('div');
+  bar.className = 'callbar';
+  bar.innerHTML = `<span class="dot" aria-hidden="true"></span><span><b>Call in progress</b> · 0123 456 0177 (not on file)</span>
+    <div class="patience" aria-hidden="true"><div class="lbl">Marta's patience</div><div class="ptrack"><div class="pfill" id="pfill"></div></div></div>
+    <button type="button" id="timerBtn" aria-pressed="false">Pause timer</button>
+    <span class="sr-only">The patience bar is for atmosphere only. It never ends the call or affects your score.</span>`;
+  main.querySelector('.narr').before(bar);
+  let t = 25, paused = false; const total = 25;
+  const fill = $('#pfill');
+  $('#timerBtn').addEventListener('click', e=>{ paused = !paused; e.currentTarget.textContent = paused ? 'Resume timer' : 'Pause timer'; e.currentTarget.setAttribute('aria-pressed', String(paused)); });
+  callTimer = setInterval(()=>{
+    if (paused) return;
+    t = Math.max(0, t-1);
+    fill.style.width = (t/total*100) + '%';
+    if (t === 12 && !S.moods.marta){ S.moods.marta = 'angry'; redrawScene(node); delete S.moods.marta; }
+    if (t === 0){
+      stopCallTimer();
+      const p = document.createElement('div'); p.className = 'bubble';
+      p.innerHTML = `<span class="who">Marta Feldkamp</span>"Hello? Are you still there?" <span class="sr-only">(No penalty. Take your time.)</span>`;
+      main.querySelector('.narr').append(p);
+    }
+  }, 1000);
+}
+function stopCallTimer(){ if (callTimer){ clearInterval(callTimer); callTimer = null; } }
+
+function renderPredict(node){
+  frame(node, `<p class="prompt" id="promptLbl">${node.prompt}</p>
+    <ul class="choices" aria-labelledby="promptLbl">${node.options.map((o,i)=>`<li><button class="choice" type="button" data-i="${i}" aria-pressed="false"><span class="key" aria-hidden="true">${'ABC'[i]}</span><span>${o.text}</span></button></li>`).join('')}</ul>`);
+  main.querySelectorAll('.choice').forEach(b=> b.addEventListener('click', ()=>{
+    S.prediction = +b.dataset.i;
+    main.querySelectorAll('.choice').forEach(x=>{ x.disabled = true; });
+    b.setAttribute('aria-pressed','true');
+    $('#fb').innerHTML = `<section class="feedback" aria-labelledby="fbTitle"><h3 id="fbTitle" tabindex="-1">Answer saved</h3>
+      <p>Keep it in mind. You will find out in the inbox.</p>
+      <div class="row"><button class="btn" id="nextBtn" type="button">Go to the inbox <span aria-hidden="true">→</span></button></div></section>`;
+    announce('Answer saved. You will find out in the inbox.');
+    $('#fbTitle').focus();
+    $('#nextBtn').addEventListener('click', ()=> go(node.next));
+  }));
+}
+
+function renderInbox(node){
+  const flagged = new Set(); let current = node.emails[0].id; const opened = new Set([current]);
+  frame(node, `<div class="inbox">
+      <ul class="mail-list" aria-label="Inbox, ${node.emails.length} messages">${node.emails.map(m=>`<li><button type="button" class="mail-item" data-id="${m.id}">
+        <span class="from"><span>${m.from}</span><time>${m.time}</time></span><span class="subj">${m.subject}</span><span class="flagmark" hidden>■ Flagged</span></button></li>`).join('')}</ul>
+      <div class="reader" id="reader" aria-live="off"></div>
+    </div>
+    <div class="row"><button class="btn" id="checkBtn" type="button">Check my flags</button><span class="counter" id="flagCount">0 flagged</span></div>`);
+  const draw = ()=>{
+    const m = node.emails.find(e=>e.id===current);
+    main.querySelectorAll('.mail-item').forEach(b=>{
+      b.setAttribute('aria-current', String(b.dataset.id===current));
+      b.classList.toggle('unread', !opened.has(b.dataset.id));
+      b.querySelector('.flagmark').hidden = !flagged.has(b.dataset.id);
+      b.setAttribute('aria-label', `${b.querySelector('.from span').textContent}: ${node.emails.find(e=>e.id===b.dataset.id).subject}${flagged.has(b.dataset.id)?', flagged':''}`);
+    });
+    $('#reader').innerHTML = `<h3>${m.subject}</h3><div class="meta">From <b>${m.from}</b> · ${m.time}</div><div class="mailbody">${m.body}</div>
+      <button type="button" class="flagbtn" id="flagBtn" aria-pressed="${flagged.has(m.id)}" ${S._inboxDone?'disabled':''}>${flagged.has(m.id)?'Flagged as access request':'Flag as access request'}</button>
+      ${S._inboxDone ? `<p class="res ${m.isRequest?'good':''}"><b>${m.why}</b></p>` : ''}`;
+    $('#flagBtn').addEventListener('click', ()=>{ flagged.has(m.id) ? flagged.delete(m.id) : flagged.add(m.id); draw(); $('#flagBtn').focus(); });
+    $('#flagCount').textContent = `${flagged.size} flagged`;
+  };
+  main.querySelectorAll('.mail-item').forEach(b=> b.addEventListener('click', ()=>{ current = b.dataset.id; opened.add(current); draw(); }));
+  S._inboxDone = false; draw();
+  $('#checkBtn').addEventListener('click', ()=>{
+    const req = node.emails.filter(e=>e.isRequest).map(e=>e.id);
+    const gotAll = req.every(id=>flagged.has(id));
+    const extra = [...flagged].filter(id=>!req.includes(id));
+    const quality = !gotAll ? 'poor' : (extra.length ? 'ok' : 'best');
+    S._inboxDone = true; draw();
+    $('#checkBtn').disabled = true;
+    const r = { quality,
+      fx: quality==='poor' ? { risk:10, flags:{inboxMissed:true} } : { risk: quality==='best' ? -5 : 0 },
+      result: quality==='best' ? 'You spotted the one message that contains an access request.'
+        : quality==='ok' ? `You spotted Marta's request, but also flagged ${extra.length} message${extra.length>1?'s':''} that ${extra.length>1?'are':'is'} not an access request.`
+        : 'You missed the access request hidden in Marta\'s complaint.',
+      why:'A request does not have to say "GDPR", use a form or come through a set channel. It can even be made verbally. What counts is that the person asks for their personal data.',
+      cite: node.cite };
+    const pred = (S.prediction != null) ? `<p><b>Your prediction:</b> "${NODES.predict.options[S.prediction].text}" ${S.prediction === NODES.predict.correct ? 'That was right.' : 'Marta\'s email shows otherwise: wording and channel do not matter.'}</p>` : '';
+    const list = pred + `<ul class="fb-list">${node.emails.map(e=>`<li><b>${e.from}:</b> ${e.why}</li>`).join('')}</ul>`;
+    showFeedback(node, `Flagged: ${flagged.size ? [...flagged].map(id=>node.emails.find(e=>e.id===id).from).join(', ') : 'nothing'}`, r, node.next, list);
+  });
+}
+
+function renderChecklist(node){
+  frame(node, `<fieldset class="check"><legend>${node.legend}</legend>
+      ${node.items.map(i=>`<div class="opt"><input type="checkbox" id="c_${i.id}" value="${i.id}"><label for="c_${i.id}">${i.label}<span class="res" id="r_${i.id}"></span></label></div>`).join('')}
+    </fieldset>
+    <div class="row"><button class="btn" id="checkBtn" type="button">Check my selection</button></div>`);
+  $('#checkBtn').addEventListener('click', ()=>{
+    const sel = new Set([...main.querySelectorAll('fieldset input:checked')].map(i=>i.value));
+    const r = node.evaluate(sel, S);
+    node.items.forEach(i=>{
+      const box = $('#c_'+i.id), res = $('#r_'+i.id); box.disabled = true;
+      const picked = sel.has(i.id);
+      if (i.correct && picked){ res.className='res good'; res.textContent = '✓ Needed. ' + i.why; }
+      else if (i.correct){ res.className='res bad'; res.textContent = 'Missed, so it would be absent from the response. ' + i.why; }
+      else if (picked){ res.className='res bad'; res.textContent = 'Not needed. ' + i.why; }
+      else { res.className='res good'; res.textContent = 'Left out. ' + i.why; }
+    });
+    $('#checkBtn').disabled = true;
+    const label = [...sel].map(id=>node.items.find(i=>i.id===id).label).join('; ') || 'nothing';
+    showFeedback(node, `Selected: ${label}`, r, node.next);
+  });
+}
+
+function renderRedact(node){
+  const sel = new Set();
+  const docHtml = node.doc.replace(/\[\[(\w+)\]\]/g, (_,k)=>`<button type="button" class="tok" data-k="${k}" aria-pressed="false"><span class="tt">${node.tokens[k].text}</span></button>`);
+  frame(node, `<div class="doc" role="group" aria-label="Job ticket 48213. Each highlighted item is a toggle button: pressed means redacted.">
+      <h3><span>Job ticket #48213 (extract)</span><span class="stamp">COPY FOR DATA SUBJECT</span></h3>${docHtml}</div>
+    <p class="counter" id="redCount">0 items redacted</p>
+    <div class="row"><button class="btn" id="checkBtn" type="button">Check redactions</button></div>`);
+  main.querySelectorAll('.tok').forEach(b=> b.addEventListener('click', ()=>{
+    if (b.dataset.locked) return;
+    const k = b.dataset.k; sel.has(k) ? sel.delete(k) : sel.add(k);
+    b.setAttribute('aria-pressed', String(sel.has(k)));
+    b.setAttribute('aria-label', (sel.has(k) ? 'Redacted: ' : '') + node.tokens[k].text);
+    $('#redCount').textContent = `${sel.size} item${sel.size===1?'':'s'} redacted`;
+  }));
+  $('#checkBtn').addEventListener('click', ()=>{
+    const r = node.evaluate(sel);
+    main.querySelectorAll('.tok').forEach(b=>{ b.dataset.locked = '1'; b.setAttribute('aria-disabled','true');
+      if (r.missed.includes(b.dataset.k)) b.classList.add('miss'); if (r.over.includes(b.dataset.k)) b.classList.add('over'); });
+    $('#checkBtn').disabled = true;
+    const t = node.tokens;
+    const list = `<ul class="fb-list">${Object.keys(t).map(k=>{
+      const red = sel.has(k), ok = red === t[k].third;
+      return `<li><b>${ok ? '✓' : '✗'} ${t[k].text}</b>: ${red?'redacted':'left visible'}. ${t[k].why}</li>`; }).join('')}</ul>`;
+    showFeedback(node, `Redacted ${sel.size}: ${[...sel].map(k=>t[k].text).join(', ') || 'nothing'}`, r, node.next, list);
+  });
+}
+
+/* ---------- Start, ending, review ---------- */
+function renderStart(){
+  $('#hud').hidden = true;
+  const castFig = id => `<figure><svg viewBox="0 0 160 192" role="img" aria-label="${CHARACTERS[id].name}"><rect width="160" height="192" fill="#e4ecf2" rx="14"/>${person(id, id==='tobias'?'concerned':'neutral')}</svg><figcaption><b>${CHARACTERS[id].name}</b>${CHARACTERS[id].role}</figcaption></figure>`;
+  main.innerHTML = `${sceneSVG('office', [['agent','happy'],['marta','concerned']])}
+    <div class="body">
+      <div class="hero">
+        <div>
+          <div class="kicker">Branching scenario · GDPR</div>
+          <h1 id="nodeTitle" tabindex="-1">The Access Request</h1>
+          <p class="goal">Handle a customer's request for her personal data on time and by the book, even under pressure.</p>
+          <div class="chips"><span class="chip">About 8 minutes</span><span class="chip">10 decisions</span><span class="chip">DSAR checklist at the end</span><span class="chip">4 possible endings</span></div>
+          <div class="row"><button class="btn" id="startBtn" type="button">Start <span aria-hidden="true">→</span></button></div>
+        </div>
+        <div class="hero-art">
+          <div class="panel"><h3>Learning objectives</h3><p style="margin:.2em 0 .4em">By the end, you will be able to:</p><ol>
+            <li>Identify a data subject access request in an informal message, whatever its wording or channel.</li>
+            <li>Apply the GDPR rules on deadline, extension, fees and identity checks to a live request (Art. 12).</li>
+            <li>Assemble a complete response that contains the Art. 15 information and redacts third-party data.</li></ol></div>
+        </div>
+      </div>
+      <div class="panel"><h3>How it works</h3><ul>
+        <li>You play a customer service agent at <b>Lumaro Home Services</b>, a fictional home-repair company in Germany.</li>
+        <li>Watch the <b>deadline</b>, <b>customer trust</b> and <b>compliance risk</b> at the top. Your choices change what happens next.</li>
+        <li>Every screen works with a keyboard. The one timer is for atmosphere only. You can pause it and it never costs you anything.</li></ul></div>
+      <div class="cast" aria-label="Characters">${['agent','marta','tobias','dana'].map(castFig).join('')}</div>
+      <p class="legal">All companies, people and data in this scenario are fictional. Training, not legal advice.</p>
+    </div>`;
+  $('#startBtn').addEventListener('click', ()=>{ S = freshState(); $('#hud').hidden = false; updateHud(); go('predict'); });
+}
+
+function renderEnding(){
+  stopCallTimer();
+  const key = S.ending || (S.ending = computeEnding(S));
+  const e = ENDINGS[key];
+  const issues = Object.keys(S.flags).filter(f=>S.flags[f] && FLAG_NOTES[f]).map(f=>`<li>${FLAG_NOTES[f]}</li>`).join('');
+  const sc = score(S);
+  main.innerHTML = `${sceneSVG(e.scene.bg, e.scene.cast)}
+    <div class="body">
+      <span class="endbadge ${key}">${e.badge}</span>
+      <h2 id="nodeTitle" tabindex="-1">${e.title}</h2>
+      <div class="narr">${val(e.text, S)}</div>
+      ${issues && key!=='exemplary' ? `<div class="panel"><h3>${key==='clumsy'?'What made it clumsy':'What went wrong along the way'}</h3><ul>${issues}</ul></div>` : ''}
+      ${e.rule ? `<p class="rule"><b>Rule to keep:</b> ${e.rule}</p>` : ''}
+      <div class="panel"><h3><label for="reflect">What will you do differently next time a request arrives?</label></h3>
+        <textarea id="reflect" rows="3">${(S.reflection||'').replace(/</g,'&lt;')}</textarea>
+        <p class="counter">Your answer stays in this browser tab. It is not saved or sent anywhere.</p></div>
+      <div class="stats3"><div><b>${sc}%</b><span>Decision score</span></div><div><b>${S.trust}</b><span>Customer trust</span></div><div><b>${S.risk}</b><span>Compliance risk</span></div></div>
+      <div class="row"><button class="btn" id="reviewBtn" type="button">Review your decisions</button><button class="btn secondary" id="aidBtn" type="button">DSAR checklist</button><button class="btn secondary" id="replayBtn" type="button">Replay</button></div>
+      <p class="legal">Legal content correct as of 6 November 2026. Training, not legal advice. Based on Regulation (EU) 2016/679 (GDPR), Arts. 4, 5, 12, 15, 32, 33, 77. Lumaro Home Services and all characters are fictional.</p>
+    </div>`;
+  $('#nodeTitle').focus({preventScroll:true}); toTop();
+  announce(`Scenario complete. Ending: ${e.badge}. Score ${sc} percent.`);
+  $('#reflect').addEventListener('input', e=>{ S.reflection = e.target.value; });
+  $('#reviewBtn').addEventListener('click', renderReview);
+  $('#aidBtn').addEventListener('click', renderJobAid);
+  $('#replayBtn').addEventListener('click', ()=>{ renderStart(); $('#nodeTitle').focus(); });
+  // Tell a host page (e.g. an LMS wrapper) that the learner finished.
+  try { if (window.parent && window.parent !== window) window.parent.postMessage({ type:'scenario-complete', ending:key, score:sc }, '*'); } catch(err){}
+}
+
+function renderReview(){
+  main.innerHTML = `<div class="body">
+      <div class="eyebrow"><span>Debrief</span></div>
+      <h2 id="nodeTitle" tabindex="-1">Your decisions</h2>
+      <p>Each choice, what it led to, and the rule behind it.</p>
+      <ol class="review">${S.log.map((l,i)=>`<li>
+        <div class="rh"><span>${l.step ? 'Decision '+l.step : 'Complication'}: ${l.title}</span><span class="badge ${l.quality}">${QUALITY[l.quality].label}</span></div>
+        <p class="rc"><span>You chose:</span> ${l.choice}</p>
+        <p class="rc"><span>Consequence:</span> ${l.result}</p>
+        <span class="cite">${l.cite}</span></li>`).join('')}</ol>
+      <div class="row"><button class="btn secondary" id="backBtn" type="button">Back to ending</button><button class="btn secondary" id="aidBtn" type="button">DSAR checklist</button><button class="btn" id="replayBtn" type="button">Replay</button></div>
+      <p class="legal">Legal content correct as of 6 November 2026. Training, not legal advice.</p>
+    </div>`;
+  $('#nodeTitle').focus({preventScroll:true}); toTop();
+  $('#backBtn').addEventListener('click', renderEnding);
+  $('#aidBtn').addEventListener('click', renderJobAid);
+  $('#replayBtn').addEventListener('click', ()=>{ renderStart(); $('#nodeTitle').focus(); });
+}
+
+/* ---------- Job aid: one-screen DSAR checklist (edit JOB_AID to change it) ---------- */
+const JOB_AID = [
+  ['Spot it', 'Any clear request for "my data" counts, in any wording and any channel, even by phone.', 'Art. 15(1)'],
+  ['Log it', 'Record the date it arrived and acknowledge it. The deadline is one month from receipt.', 'Art. 12(3)'],
+  ['Check identity only if in doubt', 'Use details you already hold first. Ask for ID documents only if you really need them.', 'Art. 12(6)'],
+  ['Do not charge or refuse', 'The first copy is free. Refusing needs proof that the request is manifestly unfounded or excessive.', 'Art. 12(5), 15(3)'],
+  ['Search every system', 'CRM, tickets, field notes, call recordings, email, billing, marketing lists etc.', 'Art. 15(1)'],
+  ['Keep awkward data in', 'Opinions about the person are their data. Do not delete or hold back data once a request is in.', 'Art. 4(1), 5(1)(a)'],
+  ['Redact other people', 'Black out third-party details. Keep the requester\'s own data visible.', 'Art. 15(4)'],
+  ['Add the Art. 15 information', 'Purposes, categories, recipients, retention, other rights, the right to complain, the source and automated decisions.', 'Art. 15(1)(a)–(h)'],
+  ['Need more time?', 'Tell the person within the first month and give reasons. You can extend by up to two further months.', 'Art. 12(3)'],
+  ['Send it securely', 'Electronic form if they asked electronically. Use a verified address and protection in transit.', 'Art. 15(3), 32']
+];
+function renderJobAid(){
+  main.innerHTML = `<div class="body">
+      <div class="eyebrow"><span>Job aid</span></div>
+      <h2 id="nodeTitle" tabindex="-1">DSAR checklist</h2>
+      <p>Keep this next to the inbox. Print it if you like.</p>
+      <ol class="aid">${JOB_AID.map(([h,t,c])=>`<li><b>${h}${/[?.]$/.test(h) ? '' : '.'}</b> ${t} <span class="cite">GDPR ${c}</span></li>`).join('')}</ol>
+      <div class="row"><button class="btn secondary" id="backBtn" type="button">Back to ending</button><button class="btn secondary" id="printBtn" type="button">Print checklist</button><button class="btn" id="replayBtn" type="button">Replay</button></div>
+      <p class="legal">Legal content correct as of 6 November 2026. Training, not legal advice.</p>
+    </div>`;
+  $('#nodeTitle').focus({preventScroll:true}); toTop();
+  $('#backBtn').addEventListener('click', renderEnding);
+  $('#printBtn').addEventListener('click', ()=> window.print());
+  $('#replayBtn').addEventListener('click', ()=>{ renderStart(); $('#nodeTitle').focus(); });
+}
+
+/* ---------- Router ---------- */
+function go(id){
+  stopCallTimer();
+  if (id === 'END') return renderEnding();
+  const node = NODES[id];
+  S.node = id; S.moods = {};
+  if (typeof node.day === 'number') S.day = node.day;
+  updateHud();
+  ({ predict:renderPredict, choice:renderChoice, call:renderCall, inbox:renderInbox, checklist:renderChecklist, redact:renderRedact })[node.type](node);
+}
+
+$('#restartBtn').addEventListener('click', ()=>{ stopCallTimer(); renderStart(); $('#nodeTitle').focus(); });
+renderStart();
+</script>
+</body>
+</html>
