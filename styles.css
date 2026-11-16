@@ -334,3 +334,26 @@ main { display: block; }
 .data tbody th { font-weight: 600; color: var(--text); }
 .pull { margin: 1.5rem 0; padding: 1.25rem 1.5rem; border-left: 3px solid var(--teal); background: var(--surface); font-family: var(--serif); font-size: 1.12rem; max-width: var(--measure); }
 .pull p { margin: 0; }
+
+/* VS Design page: product images and the "notify me" sign-up form */
+.shot { border-radius: 8px; margin: 1.5rem 0; border: 1px solid var(--line); }
+.signup { max-width: var(--measure); margin-top: 1rem; }
+.signup label { display: block; font-weight: 600; margin-bottom: 0.35rem; }
+.signup-row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.signup input[type="email"] {
+  flex: 1 1 16rem;
+  min-width: 0;
+  padding: 0.65rem 0.8rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--muted);
+  border-radius: 6px;
+}
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
